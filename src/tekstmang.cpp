@@ -198,6 +198,7 @@ void hommik_1(Player mainChar){
      typeDialog("Mum", "Okay, but don’t forget your friends are waiting for you outside in 30 minutes. ", 65, 100, 0);
      typeDialog(mainChar.name, "Whatever.", 65, 1000, 0);
      typeText("Friends arrive", 30, 1000, 2000);
+     // Make the player go outside (ask directions and where to go. Move inside the house etc.)
      typeDialog(friend1.name, "Well look who woke up.", 65, 50, 0);
      typeDialog(mainChar.name, "Shut it.", 65, 50, 0);
      typeDialog(friend2.name, "Chill, why so cranky.", 65, 50, 0);
