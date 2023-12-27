@@ -8,6 +8,13 @@
 
 using namespace std;
 
+struct Item { // also counts for weapon
+    string name;
+    string description;
+    int damage;
+    int rarity; // 1-5, 1 common, 5-legendary (common, uncommon, rare, epic, legendary)
+};
+
 struct Player {
     // Basic info
     string name;
@@ -23,28 +30,18 @@ struct Player {
 
     // other
     int gold; // Amount of money the main character has.
-    vector<string> inventory; // list of items, inventory.
+    vector<Item> inventory; // list of items, inventory.
 
-    Player(string playerName, string Class, string race, int level, int HPStat, int intStat, int strStat, int agiStat, int gold, vector<string> inventory)
+    Player(string playerName, string Class, string race, int level, int HPStat, int intStat, int strStat, int agiStat, int gold, vector<Item> inventory)
         : name(playerName), className(Class), race(race), level(level), HPStat(HPStat), intStat(intStat), strStat(strStat), agiStat(agiStat), gold(gold), inventory(inventory) {}
-};
-
-struct Weapon {
-    string name;
-    int damage;
-};
-
-struct Item {
-    string name;
-    string description;
-    int rarity; // 1-5, 1 common, 5-legendary (common, uncommon, rare, epic, legendary)
 };
 
 struct Enemy {
     string name;
     int HPstat;
     int level;
-    Weapon weapon;
+    Item weapon;
+    int gold;
 };
 
 //Weapon weapon_1 = {"relva_nimi", 20};
