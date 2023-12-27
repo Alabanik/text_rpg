@@ -9,6 +9,9 @@
 #include <thread>
 #include <string>
 
+// the shit
+#include "structs.h"
+
 using namespace std;
 // Ideed
 // Save/load progress
@@ -17,35 +20,6 @@ using namespace std;
 
 // init
 string mc_name;
-
-struct Player {
-    // Basic info
-    string name;
-    string className; 
-    string race; // useless
-
-    // Stats
-    int level; // ...
-    int HPStat; // healthpoints
-    int intStat; // inteligence, mana, magic
-    int strStat; // strength
-    int agiStat; // speed
-
-    // other
-    int gold; // Amount of money the main character has.
-    vector<string> inventory; // list of items, inventory.
-
-    Player(string playerName, string Class, string race, int level, int HPStat, int intStat, int strStat, int agiStat, int gold, vector<string> inventory)
-        : name(playerName), className(Class), race(race), level(level), HPStat(HPStat), intStat(intStat), strStat(strStat), agiStat(agiStat), gold(gold), inventory(inventory) {}
-};
-
-struct sideChar {
-    // basic info
-    string name;
-    int age;
-    int relationship; // Relationship with the main character. 1-10
-    int gold; // Amount of money this character has.
-};
 
 void makePage(string topMessage, vector<string> bottomMessages) {
     cout << "> " << (topMessage) << "\n\n";
@@ -78,7 +52,7 @@ int randomnumber() {
 }
 
 // Just types text with a customizable delay.
-void typeText(string text, int delay = 65, int endDelay = 50, int startDelay = 0) {
+void typeText(string text, int delay = 45, int endDelay = 50, int startDelay = 0) {
     this_thread::sleep_for(chrono::milliseconds(startDelay));
     for (char c : text) {
         cout << c << std::flush;
@@ -92,9 +66,9 @@ void typeText(string text, int delay = 65, int endDelay = 50, int startDelay = 0
 // Gives the user choices on what they can answer with.
 // Output (e.g): "Mom": "Did you do the dishes yet?"
 // Multiple choices from 1 to infinite. Put the answers inside a choices vector (e.g: {"Yes", "No"})
-void choiceDialog(string talker, string text, vector<string> choices, int delay = 65, int endDelay = 50, int startDelay = 0) {
+void choiceDialog(string talker, string text, vector<string> choices, int delay = 45, int endDelay = 50, int startDelay = 0) {
     this_thread::sleep_for(chrono::milliseconds(startDelay));
-    cout << "" << talker << ": " << std::flush;
+    cout << "\n" << talker << ": " << std::flush;
     for (char c : text) {
         cout << c << std::flush;
         this_thread::sleep_for(chrono::milliseconds(delay));
@@ -109,9 +83,9 @@ void choiceDialog(string talker, string text, vector<string> choices, int delay 
 
 // funtion to type out dialog with a specified delay to make it look more like a dialog.
 // Output (e.g): "Mom": "Wake up! Breakfast is ready."
-void typeDialog(string talker, string text, int delay = 65, int endDelay = 50, int startDelay = 0) {
+void typeDialog(string talker, string text, int delay = 45, int endDelay = 50, int startDelay = 0) {
     this_thread::sleep_for(chrono::milliseconds(startDelay));
-    cout << "" << talker << ": " << std::flush;
+    cout << "\n" << talker << ": " << std::flush;
     for (char c : text) {
         cout << c << std::flush;
         this_thread::sleep_for(chrono::milliseconds(delay));
@@ -127,9 +101,16 @@ sideChar friend2 = {"William", 15, 7, 0};
 sideChar OldJack = {"Old Jack", 100 , 1, 0};
 sideChar YoungJack = {"Young Jack", 100 , 1, 0};
 
+
+
+
+
+
 // Initialization of functions to be used later on.
 void hommik_1(Player mainChar); // Morning, waking up, meeting friends.
 void caves_1_choice(Player mainChar); // Going into the cave. Exploring the cave.
+void cave_choice_2(Player mainChar, bool skipped);
+
 
 void startGame() { // algus
     clearWnd();
@@ -142,7 +123,21 @@ void startGame() { // algus
     typeText("The air is thick with unfamiliar stillness, and as you open your eyes,", 50, 25, 100);
     typeText("Your gaze follows the faint glow that beckons from the end of a narrow tunnel", 50, 25, 100);
     typeText("A surge of fear courses through you, and you start thinking about the past you have been through.", 50, 1000, 100);
-    hommik_1(mainChar);
+    choiceDialog("Narrator", "(Would you like to skip the dialog?)", { "Yes, I have already read through it.", "Id rather read it." }, 30, 60, 0);
+    int choice_2;
+    printf("> ");
+    cin >> choice_2;
+    switch(choice_2){
+        case 1:
+		    // skip the dialog.
+            typeText("tl;dr : Your friends decided to open a chest inside a cave.");
+            cave_choice_2(mainChar, true);
+            break;
+        case 2:
+		    hommik_1(mainChar); //choice 2. Reads
+            break;
+    }
+   
 }
 
 int main()
@@ -193,22 +188,22 @@ int main()
 
 void hommik_1(Player mainChar){
      clearWnd();
-     typeDialog("Mum", "Wake up! Breakfast is ready.", 65, 50, 0);
-     typeDialog(mainChar.name, "Just one more minute, please.", 65, 50, 0);
-     typeDialog("Mum", "Okay, but don’t forget your friends are waiting for you outside in 30 minutes. ", 65, 100, 0);
-     typeDialog(mainChar.name, "Whatever.", 65, 1000, 0);
+     typeDialog("Mum", "Wake up! Breakfast is ready.", 45, 50, 0);
+     typeDialog(mainChar.name, "Just one more minute, please.", 45, 50, 0);
+     typeDialog("Mum", "Okay, but don’t forget your friends are waiting for you outside in 30 minutes. ", 45, 100, 0);
+     typeDialog(mainChar.name, "Whatever.", 45, 1000, 0);
      typeText("Friends arrive", 30, 1000, 2000);
      // Make the player go outside (ask directions and where to go. Move inside the house etc.)
-     typeDialog(friend1.name, "Well look who woke up.", 65, 50, 0);
-     typeDialog(mainChar.name, "Shut it.", 65, 50, 0);
-     typeDialog(friend2.name, "Chill, why so cranky.", 65, 50, 0);
+     typeDialog(friend1.name, "Well look who woke up.", 45, 50, 0);
+     typeDialog(mainChar.name, "Shut it.", 45, 50, 0);
+     typeDialog(friend2.name, "Chill, why so cranky.", 45, 50, 0);
      typeDialog(mainChar.name, "Sorry, I just had a bad sleep. Let’s go, check out the cave.");
      typeDialog(mainChar.name, "(looking at the cave entrance) Wow! So dark inside. Do you think it’s a good idea?");
      typeDialog(friend1.name, "(Making a terrified face) Are you scared little boy?");
      typeDialog(friend2.name, "He is definitely thinking about running back to his mum.");
      typeDialog("Friends", "(Laughing)");
      typeDialog(mainChar.name, "Ha Ha so funny. Come on, whoever is last has to kiss Jessica.");
-     typeText("They all enter the cave together..", 65, 50, 600);
+     typeText("They all enter the cave together..", 45, 50, 600);
      caves_1_choice(mainChar);
 }
 
@@ -216,7 +211,7 @@ void caves_1_choice(Player mainChar){
     typeDialog(friend2.name, "It’s so wet here.");
     typeDialog(friend1.name, "I can smell something nasty, I think it is dead corps..");
     typeDialog(mainChar.name, "Take the torch and light it.");
-    typeText("The three of them proceed to light up the torches and find an old chest with spider webs all over it.", 65, 50, 600);
+    typeText("The three of them proceed to light up the torches and find an old chest with spider webs all over it.", 45, 50, 600);
     typeDialog(mainChar.name, "Look! A chest.");
     typeDialog(friend2.name, "Some poor old man has probably forgotten it here and is not coming back for it.");
     typeDialog(friend1.name, "(Sneaking up them and with a distorted voice says) Don’t you dare to open my secret or thousand different illnesses shall be upon you.");
@@ -238,5 +233,33 @@ void caves_1_choice(Player mainChar){
             typeDialog(friend1.name, "Yeah, we will open this chest.");
             break;
     }
-    // continue
+    cave_choice_2(mainChar, false);
+}
+
+void cave_choice_2(Player mainChar, bool skipped) {
+    if (!skipped) {
+        typeText("Trio crack opens the chest.", 45, 50, 600);
+        typeDialog(mainChar.name, "Wow! Look at  jewelry.");
+        typeDialog(friend2.name, "This is incredible! We hit the jackpot!");
+        typeDialog(friend1.name, "I told you there was something valuable here. Let's grab as much as we can.");
+        typeDialog(mainChar.name, "Hold on, let's not get too carried away. We don't know if this belongs to someone, and we wouldn't want trouble.");
+        typeDialog(friend2.name, "(mockingly)Oh, come on, don't be such a killjoy. It's probably been abandoned for years.");
+        typeDialog(mainChar.name, " (hesitant)I don't know, guys. Something feels off about this.");
+        typeDialog(friend1.name, "Stop being paranoid. Look at these gems and jewels. We could be rich!");
+        typeDialog(mainChar.name, "Look a script.");
+        typeDialog(friend2.name, "What does it say?");
+        typeDialog(mainChar.name, " ( breathing heavily)“For those that are here, listen carefully.I am Old Jack, the father of Young Jack.Do not dare to steal from us or bad things will happen.This cave was made by me against the demons.The humans won that fight and trapped the souls in here.DO NOT go looking for them.” - Old Jack");
+        typeDialog(friend1.name, "This is some crazy writing, who cares. Better to get the stuff and go back because it is getting late.");
+        typeText("As the friends start dividing the loot among themselves, a distant sound echoes through the cave, like a low rumble. The atmosphere grows tense, and a sudden chill runs down their spines.", 45, 50, 600);
+        typeDialog(mainChar.name, "(whispering) Did you hear that ?");
+        typeDialog(friend2.name, "Relax, it's probably just the wind.");
+        typeText("Suddenly, the torches flicker, and the cave seems to come alive with ominous whispers. The trio exchange uneasy glances as the air becomes charged with an otherworldly energy.", 45, 50, 600);
+        typeDialog(friend1.name, "(nervously) Okay, maybe we should wrap this up and get out of here.");
+        typeDialog(mainChar.name, "Agreed. Let's not overstay our welcome.");
+        typeText("Just as they're about to leave, a mysterious mist envelops the cave, and the entrance disappears, leaving them trapped in the darkness.", 45, 50, 600);
+        typeDialog(friend2.name, "What's happening? Where's the way out?");
+        typeDialog(mainChar.name, "I knew we shouldn't have messed with this chest. We've unleashed something.");
+        typeText("As the trio frantically searches for an exit, the cave transforms into a labyrinth of winding passages and shifting walls. Panic sets in as they realize they are no longer in control.", 45, 50, 600);
+    }
+    // alustab siit
 }

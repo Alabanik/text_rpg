@@ -1,1 +1,5 @@
-﻿
+﻿  tekstmang.cpp
+C:\Users\atluzka\Downloads\text_rpg-main\text_rpg-main\src\tekstmang.cpp(49,8): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
+  tekstmang.vcxproj -> C:\Users\atluzka\Downloads\text_rpg-main\text_rpg-main\x64\Debug\tekstmang.exe
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.
