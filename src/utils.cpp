@@ -8,6 +8,7 @@
 #include <chrono>
 #include <thread>
 #include <string>
+#include <random>
 
 using namespace std;
 
@@ -78,8 +79,16 @@ void clearWnd() { // function which clears the window.
     #endif
 }
 
-int randomnumber() {
-    int x = time(0);
-    srand(x);
-    return x;
+int getRandom(int min, int max) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> distribution(min, max);
+    return distribution(gen);
+}
+
+bool shouldCall(int prob) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> distribution(0, 100);
+    return distribution(gen) <= prob;
 }

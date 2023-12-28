@@ -13,6 +13,13 @@ struct Item { // also counts for weapon
     string description;
     int damage;
     int rarity; // 1-5, 1 common, 5-legendary (common, uncommon, rare, epic, legendary)
+    bool isWeapon;
+};
+
+struct Quest {
+    string name;
+    string description;
+    string progress; // "IN_PROGRESS", "COMPLETED", "WAITING_FOR_REWARD"
 };
 
 struct Player {
@@ -20,6 +27,9 @@ struct Player {
     string name;
     string className;
     string race; // useless
+    string cord; // where the player is at.
+    
+    vector<Quest> quests;
 
     // Stats
     int level; // ...
@@ -34,6 +44,20 @@ struct Player {
 
     Player(string playerName, string Class, string race, int level, int HPStat, int intStat, int strStat, int agiStat, int gold, vector<Item> inventory)
         : name(playerName), className(Class), race(race), level(level), HPStat(HPStat), intStat(intStat), strStat(strStat), agiStat(agiStat), gold(gold), inventory(inventory) {}
+
+    Item strongestWeapon(vector<Item> inventory) {
+        if (inventory.empty()) {
+            return Item{ "", "", 0, 0, true };
+        }
+        Item* strongestWeapon = nullptr;
+        for (auto& weapon : inventory) {
+            if (weapon.isWeapon && (!strongestWeapon || weapon.damage > strongestWeapon->damage)) {
+                strongestWeapon = &weapon;
+            }
+        }
+        return strongestWeapon ? *strongestWeapon : Item{ "", "", 0, 0 };
+    }
+
 };
 
 struct Enemy {
@@ -42,6 +66,8 @@ struct Enemy {
     int level;
     Item weapon;
     int gold;
+    int minDamage;
+    int maxDamage;
 };
 
 //Weapon weapon_1 = {"relva_nimi", 20};

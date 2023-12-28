@@ -15,7 +15,7 @@ using namespace std;
 
 int main()
 {
-    resizeConsole(550, 800);
+    resizeConsole(1200, 600);
     clearWnd();
     makePage("Welcome to this fantastic RPG, without a name. Enjoy!", {"Load Game", "New Game", "Settings", "About", "Quit Game"});
     int x;
@@ -28,7 +28,7 @@ int main()
             break;
         case 2:
             // Make a new save
-            startGame();
+            startGame(false);
             break;
         case 3:
             // Settings, currently empty

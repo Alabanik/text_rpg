@@ -15,6 +15,7 @@ void makePage(string topMessage, vector<string> bottomMessages);
 void resizeConsole(int width, int height);
 //int choiceMove();
 void clearWnd();
-int randomnumber();
+int getRandom(int min, int max);
+bool shouldCall(int prob);
 
 #endif

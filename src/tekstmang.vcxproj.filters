@@ -13,10 +13,16 @@
     <ClCompile Include="tekstmang.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="dialog.cpp">
+    <ClCompile Include="dialog2.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="utils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="combat.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -28,6 +34,9 @@
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="dialog.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="combat.h">
       <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>
