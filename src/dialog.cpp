@@ -22,9 +22,14 @@ bool isOutside = false;
 bool hasSword = false;
 bool isDead = false;
 bool inLabyrinth = false;
+bool isDadDead = false;
 vector<string> lootedRooms;
 // visited shit
-bool visitedWitch = false;
+bool visitedWitch = false; //Q1
+bool visitedDad = false; //Q2
+bool visitedSide1 = false; //Q3
+bool visitedSide2 = false; //Q4
+
 
 // characters - mainChar.gold += 1000;
 // name, occupation, race, level, health, inteligence, str, agi, gold, inventory; 
@@ -41,13 +46,14 @@ sideChar Dad = {"Dad", 50, 5, 0}; //side 3
 
 Item juudiKaed = { "Juudi kaed", "Best for pickpockets", 5, 1, true };
 // enemy
-Enemy jew = { "Juut", 20 ,1 ,juudiKaed, 1, 4 };
+// name, hpstat, level, weapon, gold, minDmg, maxDmg
+Enemy jew = { "Jew", 20 ,1 ,juudiKaed, 1, 4 };
 Enemy goblin = { "Goblin", 10, 1, {}, 1, 4 };
 Enemy ghost = { "Ghost", 50, 1, {}, 5, 10 };
 Enemy mini1 = { "Salamander", 100, 1, {}, 10, 20 };
-Enemy minm2 = { "Goblin", 10, 1, { }, 1, 4 };
-Enemy mini3 = { "Young Jack", 10, 1, { }, 1, 4 };
-Enemy boss = { "Old Jack", 10000, 250, { }, 1, 4 };
+Enemy minm2 = { "Orphan Slaughterer", 250, 1, { }, 20, 30};
+Enemy mini3 = { "Young Jack", 500, 1, { }, 20, 50};
+Enemy boss = { "Old Jack", 10000, 250, { }, 30, 70 };
 
 // weapons
 Item Sword = { "Sword", "This shit is almost broken", 4, 1, true};
@@ -58,18 +64,20 @@ Item scaleSword = { "Scale Sword", "A sword made out of scales.. SCALES!", 350, 
 Item dragonSword = { "Dragon Sword", "Aincent Sword made out of dragons bone.", 500, 1, true };
 Item copperSword = { "Copper Sword", "Budget-friendly with modest cutting capabilities", 25,1, true};
 // quests
-Quest noiaQuest = { "Old Goblin", "Retrive the stolen magical hat.", "IN_PROGRESS" };
-
-
+Quest noiaQuest = { "Old Goblin", "Retrive the stolen magical hat.", "IN_PROGRESS" }; //Q1
+Quest dadQuest = { "Welcome back dad!", "Escape the labyrinth with dad", "IN_PROGRESS" };//Q2
+Quest collectingJewelry = { "Lost jewelry", "Retrieve John's jewelry", "IN_PROGRESS" }; //Q3
+Quest escapingCave = { "Last escape?", "Escape the dungeon with William", "IN_PROGRESS" }; //Q4
 
 // functions
 void startGame(bool after_death); // d
 void hommikScene(); // d
 void goOutsideTheVillage(); // d
-void exploreLabyrinth(); // big no
+void exploreLabyrinth(); // big no, wdym big no?
 void caveChoice_1(); // d
 void caveChoice_2(bool skipped); // d
 void noidDialog();
+void dad_quest();
 bool hasBeenInLootroom(string name);
 //void deathOccur();
 void checkStats(); // d
@@ -315,6 +323,71 @@ void noidDialog() { // noia quest
     }
 }
 
+
+void dad_quest (){
+	bool dadQuest_acceptedQuest = false;
+	bool dadQuest_waitingReward = false;
+	bool dadQuest_gotReward = false;
+
+	for (auto& quest : mainChar.quests) {
+		if (quest.name == "Welcome back dad!") {
+			dadQuest_acceptedQuest = true;
+			if (quest.progress == (string)"COMPLETED") {
+				dadQuest_gotReward = true;
+			}
+			else if (quest.progress == (string)"WAITING_FOR_REWARD") {
+				dadQuest_waitingReward = true;
+			}
+		}
+	}
+    if (!dadQuest_acceptedQuest && !visitedDad) {
+        typeDialog("Dad", " (gravely) You've come.");
+        typeDialog(mainChar.name, ": (nervously) Yeah, I... I wanted to see you.");
+        typeDialog("Dad", "(stoically) It's been a long time.");
+        typeDialog(mainChar.name, " (hesitant) I know. I thought maybe... maybe we could talk.");
+        typeDialog("Dad", " (softly) There are things you don't know, things I couldn't say.");
+        typeDialog(mainChar.name, "yearning) I just want to understand, Dad. Why did you leave?");
+        typeDialog("Dad", "(whispering) Life, it's complicated. Choices are made, and sometimes they're not the right ones.");
+        typeDialog(mainChar.name, "(vulnerable) I missed you. Mom missed you.");
+        typeDialog("Dad", "regretful) I know, and I can't change what's happened, but I may know the way out of here!");
+        visitedDad = true;
+        choiceDialog(Dad.name, "Do you want to go?", { "Sure", "Sorry, I cant right now. (leave)" }, 30, 100, 0);
+        visitedDad = true;
+        int choice_dad;
+        printf("> ");
+        cin >> choice_dad;
+        switch (choice_dad) {
+        case 1: // accept
+            mainChar.cord = "A22";
+            break;
+        case 2: // deny
+            mainChar.cord = "A23";
+            break;
+        default: // deny
+            mainChar.cord = "A23";
+            break;
+        }
+    }
+	else if (!dadQuest_acceptedQuest) {
+		typeDialog(Dad.name, "I still know the way", 45, 100, 0);
+		choiceDialog(Dad.name, "Do you want to go?", { "Sure", "Sorry, I cant right now. (leave)" }, 30, 100, 0);
+		visitedDad = true;
+		int choice_dad;
+		printf("> ");
+		cin >> choice_dad;
+		switch (choice_dad) {
+		case 1: // accept
+			mainChar.cord = "A22";
+			break;
+		case 2: // deny
+			mainChar.cord = "A23";
+			break;
+		default: // deny
+			mainChar.cord = "A23";
+			break;
+		}
+	}
+}
 void openInventory() {
     clearWnd();
     typeText(mainChar.name +" - Inventory");
@@ -379,13 +452,27 @@ void exploreLabyrinth() {
 		if (cord == (string)"Q5") {
 
 		}
+        // Side char
+
+		if (cord == (string)"S1") {
+
+		}
+        if (cord == (string)"S2") {
+
+		}
+        if (cord == (string)"S3") {
+
+		}
+        if (cord == (string)"S4") {
+
+		}
 
         //LT catecory
 		if (cord == (string)"LT1") {
             callCombat(jew);
             bool hasBeenHere = hasBeenInLootroom("LT1");
             if (!hasBeenHere) {
-                typeText("You have found 100 gold and a dagger and left the ", 45, 1000, 0););
+                typeText("You have found 100 gold and a dagger", 45, 1000, 0);
                 mainChar.inventory.push_back(dagger);
                 mainChar.gold += 100;
                 lootedRooms.push_back("LT1");
