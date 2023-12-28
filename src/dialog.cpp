@@ -18,14 +18,13 @@ using namespace std;
 
 // make player, other init
 string mc_name;
-bool isOutside = false;
-bool hasSword = false;
-bool isDead = false;
+bool isOutside = false; // 1
+bool hasSword = false; // 1
 bool inLabyrinth = false;
 bool isDadDead = false;
 vector<string> lootedRooms;
 // visited shit
-bool visitedWitch = false; //Q1
+bool visitedWitch = true; //Q1
 bool visitedDad = false; //Q2
 bool visitedSide1 = false; //Q3
 bool visitedSide2 = false; //Q4
@@ -41,19 +40,20 @@ sideChar friend2 = { "William", 15, 7, 0 }; //side 2
 sideChar OldJack = { "Old Jack", 100 , 1, 0 };
 sideChar YoungJack = { "Young Jack", 100 , 1, 0 };
 sideChar Witch = { "Witch", 60 , 1, 0 }; //side 4
-sideChar Dad = {"Dad", 50, 5, 0}; //side 3
+sideChar Dad = {"Dad", 47, 5, 0}; //side 3
 
 
 Item juudiKaed = { "Juudi kaed", "Best for pickpockets", 5, 1, true };
 // enemy
 // name, hpstat, level, weapon, gold, minDmg, maxDmg
-Enemy jew = { "Jew", 20 ,1 ,juudiKaed, 1, 4 };
-Enemy goblin = { "Goblin", 10, 1, {}, 1, 4 };
-Enemy ghost = { "Ghost", 50, 1, {}, 5, 10 };
-Enemy mini1 = { "Salamander", 100, 1, {}, 10, 20 };
-Enemy minm2 = { "Orphan Slaughterer", 250, 1, { }, 20, 30};
-Enemy mini3 = { "Young Jack", 500, 1, { }, 20, 50};
-Enemy boss = { "Old Jack", 10000, 250, { }, 30, 70 };
+Enemy jew = { "Jew", 20 ,1 ,juudiKaed, 0, 1, 4 };
+Enemy goblin = { "Goblin", 10, 1, {}, 0, 1, 4 };
+Enemy oldgoblin = { "Old Goblin", 50, 12, {}, 0, 10, 20 };
+Enemy ghost = { "Ghost", 50, 1, {}, 0, 5, 10 };
+Enemy mini1 = { "Salamander", 100, 1, {}, 0, 10, 20 };
+Enemy minm2 = { "Orphan Slaughterer", 250, 1, { }, 0, 20, 30};
+Enemy mini3 = { "Young Jack", 500, 1, { }, 0, 20, 50};
+Enemy boss = { "Old Jack", 10000, 250, { }, 0, 30, 70 };
 
 // weapons
 Item Sword = { "Sword", "This shit is almost broken", 4, 1, true};
@@ -79,7 +79,7 @@ void caveChoice_2(bool skipped); // d
 void noidDialog();
 void dad_quest();
 bool hasBeenInLootroom(string name);
-//void deathOccur();
+void deathOccur();
 void checkStats(); // d
 void openInventory(); // d
 
@@ -248,13 +248,10 @@ void noidDialog() { // noia quest
     bool noidQuest_waitingReward = false;
     bool noidQuest_gotReward = false;
     for (auto& quest : mainChar.quests) {
-        if (quest.name == "Old Goblin") {
+        if (quest.name == (string)"Old Goblin") {
             noidQuest_acceptedQuest = true;
             if (quest.progress == (string)"COMPLETED") {
                 noidQuest_gotReward = true;
-            }
-            else if (quest.progress == (string)"WAITING_FOR_REWARD") {
-                noidQuest_waitingReward = true;
             }
         }
     }
@@ -279,6 +276,7 @@ void noidDialog() { // noia quest
         cin >> choice_Noid;
         switch (choice_Noid) {
             case 1: // accept
+                mainChar.quests.push_back(noiaQuest);
                 mainChar.cord = "Q1";
                 break;
             case 2: // deny
@@ -298,6 +296,7 @@ void noidDialog() { // noia quest
         cin >> choice_Noid;
         switch (choice_Noid) {
         case 1: // accept
+            mainChar.quests.push_back(noiaQuest);
             mainChar.cord = "Q1";
             break;
         case 2: // deny
@@ -312,14 +311,33 @@ void noidDialog() { // noia quest
         // if has accepted quest and is waiting to get their reward.
         typeDialog(Witch.name, "You've done it! The old goblin was defeated, and the magical hat returned. I Am grateful for your bravery.", 45, 100, 0);
         typeDialog(mainChar.name, "The goblin was tough, but the hat is back where it belongs.", 45, 100, 0);
+        typeDialog(Witch.name, "I see, (hands you a red potion) take this and drink it.", 45, 700, 0);
+        typeText("After drinking the potion you feel a lot better. Your health has increased.", 20, 500, 0);
+        mainChar.HPStat = 100; // set hp to 100
         typeDialog(Witch.name, "Your heroism won't be forgotten.", 45, 100, 0);
         typeDialog(Witch.name, "Before exiting the cave you have to defeat 3 minibosses and final boss. Wander around and be careful goblins and other creatures have infested the place.", 45, 100, 0);
-    }
-    else if (noidQuest_acceptedQuest && !noidQuest_waitingReward) {
-        // must have had a bug, give them the reward.
+        mainChar.gold += 50;
+        for (auto& quest : mainChar.quests) {
+            if (quest.name == (string)"Old Goblin") {
+                quest.progress = "COMPLETED";
+            }
+        }
+        mainChar.cord = "A3";
     }
     else {
         // else, they have reveived the reward after completing the quest.
+        typeDialog(Witch.name, "Havent seen you in some time.", 45, 100, 0);
+        choiceDialog("Narrator", "You see a pathway going north and south", { "Go North", "Go South", "Open Inventory", "Check Stats" });
+        int choice_A2;
+        printf("> ");
+        cin >> choice_A2;
+        switch (choice_A2) {
+        case 1: mainChar.cord = "A1"; break;
+        case 2: mainChar.cord = "A3"; break;
+        case 3: openInventory(); break;
+        case 4: checkStats(); break;
+        default: break;
+        }
     }
 }
 
@@ -330,7 +348,7 @@ void dad_quest (){
 	bool dadQuest_gotReward = false;
 
 	for (auto& quest : mainChar.quests) {
-		if (quest.name == "Welcome back dad!") {
+		if (quest.name == (string)"Welcome back dad!") {
 			dadQuest_acceptedQuest = true;
 			if (quest.progress == (string)"COMPLETED") {
 				dadQuest_gotReward = true;
@@ -427,10 +445,44 @@ bool hasBeenInLootroom(string name) {
     return hasBeenHere;
 }
 
+void deathOccur() {
+    clearWnd();
+    // set variables to original.
+    visitedWitch = false; //Q1
+    visitedDad = false; //Q2
+    visitedSide1 = false; //Q3
+    visitedSide2 = false; //Q4
+    // clear inventory, but give back sword.
+    mainChar.inventory.clear();
+    mainChar.inventory.push_back(Sword);
+
+    // set cord to the start
+    mainChar.cord = "A1";
+    inLabyrinth = true; // respawns at the A1 cordinate.
+    // other stats
+    mainChar.HPStat = 100;
+    lootedRooms.clear();
+    mainChar.quests.clear();
+
+    typeText("You died. Your progress has reset.", 40, 1000, 0);
+    typeText("Respawning at the start of the labyrinth..", 15, 2000, 0);
+    clearWnd();
+    exploreLabyrinth();
+}
+
 void exploreLabyrinth() {
     while (inLabyrinth) { // hell loop
         clearWnd();
         cout << "Your current cords: " << mainChar.cord << "\n";
+        if (!mainChar.quests.size() == 0) {
+            cout << "\n";
+            for (int i = 0; i < mainChar.quests.size(); ++i) {
+                if (mainChar.quests[i].progress != (string)"COMPLETED") {
+                    cout << " " << to_string(i + 1) << ". " << mainChar.quests[i].name << " : \"" << mainChar.quests[i].description << "\" : " << mainChar.quests[i].progress << "\n";
+                }
+            }
+            cout << "\n\n";
+        }
         string cord = mainChar.cord;
         // noid
         if (cord == (string)"N1") {
@@ -438,7 +490,45 @@ void exploreLabyrinth() {
         }
         // Q category
 		if (cord == (string)"Q1") {
+            // Old goblin quest.
+            bool oldGoblin_acceptedQuest = false;
+            bool oldGoblin_alreadyBeat = false;
 
+            for (auto& quest : mainChar.quests) {
+                if (quest.name == (string)"Old Goblin") {
+                    oldGoblin_acceptedQuest = true;
+                    if (quest.progress == (string)"COMPLETED") {
+                        oldGoblin_alreadyBeat = true;
+                    }
+                    else if (quest.progress == (string)"WAITING_FOR_REWARD") {
+                        oldGoblin_alreadyBeat = true;
+                    }
+                }
+            }
+            if (oldGoblin_acceptedQuest && !oldGoblin_alreadyBeat) {
+                typeText("You search for the goblin that the witch described to you.");
+                typeText("A little bit goes by...", 30, 1000, 0);
+                typeText("...", 150, 1000, 0);
+                typeText("You see a goblin sitting beside the wall with a magical hat on their head. You go closer.", 20, 1000, 0);
+                typeDialog(mainChar.name, "Old Goblin, Im here to fight with you today.", 45, 150, 0);
+                typeDialog("Old Goblin", "Who are you? Go away, I dont have time for some little kid to ruin my day!", 45, 150, 0);
+                typeDialog(mainChar.name, "I know you stole the magical hat, return it and you dont have to die.", 45, 150, 0);
+                typeDialog("Old Goblin", "You talk big for someone so little. Come get it if you dare. Muhaha", 45, 1000, 0);
+                combatOccur(mainChar, oldgoblin);
+            }
+            else {
+                choiceDialog("Narrator", "You see a pathway going north and south", { "Go North", "Go South", "Open Inventory", "Check Stats" });
+                int choice_A2;
+                printf("> ");
+                cin >> choice_A2;
+                switch (choice_A2) {
+                case 1: mainChar.cord = "N1"; break;
+                case 2: mainChar.cord = "LT1"; break;
+                case 3: openInventory(); break;
+                case 4: checkStats(); break;
+                default: break;
+                }
+            }
 		}
 		if (cord == (string)"Q2") {
 

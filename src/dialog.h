@@ -4,7 +4,6 @@
 #define DIALOG_H
 
 void startGame(bool after_death);
-
-//void deathOccur();
+void deathOccur();
 
 #endif

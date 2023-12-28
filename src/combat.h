@@ -5,6 +5,6 @@
 
 #include "structs.h"
 
-void combatOccur(Player mainChar, Enemy enemy);
+void combatOccur(Player& mainChar, Enemy enemy);
 
 #endif
