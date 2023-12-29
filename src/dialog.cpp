@@ -21,7 +21,7 @@ string mc_name;
 bool isOutside = false; // 1
 bool hasSword = false; // 1
 bool inLabyrinth = false;
-bool isDadDead = false;
+bool isDadDead = false; // klui see ture = revart
 vector<string> lootedRooms;
 // visited shit
 bool visitedWitch = true; //Q1
@@ -46,10 +46,10 @@ sideChar Dad = {"Dad", 47, 5, 0}; //side 3
 Item juudiKaed = { "Juudi kaed", "Best for pickpockets", 5, 1, true };
 // enemy
 // name, hpstat, level, weapon, gold, minDmg, maxDmg
-Enemy jew = { "Jew", 20 ,1 ,juudiKaed, 0, 1, 4 };
+Enemy jew = { "Juut", 20 ,1 ,juudiKaed, 0, 1, 4 };
 Enemy goblin = { "Goblin", 10, 1, {}, 0, 1, 4 };
 Enemy oldgoblin = { "Old Goblin", 50, 12, {}, 0, 10, 20 };
-Enemy ghost = { "Ghost", 50, 1, {}, 0, 5, 10 };
+Enemy ghost = { "Ghost", 50, 1, {}, 0, 5, 10 }; // Q2 enemy
 Enemy mini1 = { "Salamander", 100, 1, {}, 0, 10, 20 };
 Enemy minm2 = { "Orphan Slaughterer", 250, 1, { }, 0, 20, 30};
 Enemy mini3 = { "Young Jack", 500, 1, { }, 0, 20, 50};
@@ -77,11 +77,14 @@ void exploreLabyrinth(); // big no, wdym big no?
 void caveChoice_1(); // d
 void caveChoice_2(bool skipped); // d
 void noidDialog();
-void dad_quest();
+void dad_quest(bool acceptQuest);
 bool hasBeenInLootroom(string name);
 void deathOccur();
 void checkStats(); // d
 void openInventory(); // d
+void Lost_jewelry(bool acceptQuest);
+void Last_escape(bool acceptQuest);
+
 
 void startGame(bool after_death) { // algus
     clearWnd();
@@ -243,7 +246,7 @@ void caveChoice_2(bool skipped) {
     exploreLabyrinth();
 }
 
-void noidDialog() { // noia quest
+void noidDialog() { // quest 1
     bool noidQuest_acceptedQuest = false;
     bool noidQuest_waitingReward = false;
     bool noidQuest_gotReward = false;
@@ -342,23 +345,8 @@ void noidDialog() { // noia quest
 }
 
 
-void dad_quest (){
-	bool dadQuest_acceptedQuest = false;
-	bool dadQuest_waitingReward = false;
-	bool dadQuest_gotReward = false;
-
-	for (auto& quest : mainChar.quests) {
-		if (quest.name == (string)"Welcome back dad!") {
-			dadQuest_acceptedQuest = true;
-			if (quest.progress == (string)"COMPLETED") {
-				dadQuest_gotReward = true;
-			}
-			else if (quest.progress == (string)"WAITING_FOR_REWARD") {
-				dadQuest_waitingReward = true;
-			}
-		}
-	}
-    if (!dadQuest_acceptedQuest && !visitedDad) {
+void dad_quest(bool acceptQuest) { // quest 2
+    if (!acceptQuest && !visitedDad) {
         typeDialog("Dad", " (gravely) You've come.");
         typeDialog(mainChar.name, ": (nervously) Yeah, I... I wanted to see you.");
         typeDialog("Dad", "(stoically) It's been a long time.");
@@ -368,7 +356,26 @@ void dad_quest (){
         typeDialog("Dad", "(whispering) Life, it's complicated. Choices are made, and sometimes they're not the right ones.");
         typeDialog(mainChar.name, "(vulnerable) I missed you. Mom missed you.");
         typeDialog("Dad", "regretful) I know, and I can't change what's happened, but I may know the way out of here!");
+        choiceDialog(Dad.name, "Do you want to go?", { "Sure", "Sorry, I cant right now. (leave)" }, 30, 100, 0);
         visitedDad = true;
+        int choice_dad;
+        printf("> ");
+        cin >> choice_dad;
+        switch (choice_dad) {
+        case 1: // accept
+            mainChar.quests.push_back(dadQuest);
+            mainChar.cord = "A22";
+            break;
+        case 2: // deny
+            mainChar.cord = "A23";
+            break;
+        default: // deny
+            mainChar.cord = "A23";
+            break;
+        }
+    }
+    else if (!acceptQuest) {
+        typeDialog(Dad.name, "I still know the way", 45, 100, 0);
         choiceDialog(Dad.name, "Do you want to go?", { "Sure", "Sorry, I cant right now. (leave)" }, 30, 100, 0);
         visitedDad = true;
         int choice_dad;
@@ -386,26 +393,131 @@ void dad_quest (){
             break;
         }
     }
-	else if (!dadQuest_acceptedQuest) {
-		typeDialog(Dad.name, "I still know the way", 45, 100, 0);
-		choiceDialog(Dad.name, "Do you want to go?", { "Sure", "Sorry, I cant right now. (leave)" }, 30, 100, 0);
+
+}
+
+
+void Lost_jewelry(bool acceptQuest) { //quest 3
+	bool LostJewelryQuest_acceptedQuest = false;
+	bool LostJewelryQuest_waitingReward = false;
+	bool LostJewelryQuest_gotReward = false;
+	for (auto& quest : mainChar.quests) {
+		if (quest.name == (string)"Lost jewelry") {
+			LostJewelryQuest_acceptedQuest = true;
+			if (quest.progress == (string)"COMPLETED") {
+				LostJewelryQuest_gotReward = true;
+			}
+		}
+	}
+
+    if (!acceptQuest && !visitedSide1) {
+        typeDialog(friend1.name, " (excitedly): Well, look who decided to show up! Where have you been hiding, stranger?");
+        typeDialog(mainChar.name, "Drop it. I said we shouldn't open the chest .");
+        typeDialog(friend1.name, "Well we are here now, maybe stop crying? I lost my jewelry on the way here. Let's get it?");
+        choiceDialog(friend1.name, "Do you want to help me?", { "Sure", "Sorry, I cant right now. (leave)" }, 30, 100, 0);
+        visitedSide1 = true;
+        int choice_Side1;
+        printf("> ");
+        cin >> choice_Side1;
+        switch (choice_Side1) {
+            case 1: // accept
+                typeDialog(friend1.name,"Let's get a move on then!");
+                mainChar.cord = "S1";
+                break;
+            case 2: // deny
+                mainChar.cord = "A8";
+                break;
+            default: // deny
+                mainChar.cord = "A8";
+                break;
+        }
+    }else if (!acceptQuest) {
+		typeDialog(friend1.name, "My jewelry is still lost!", 45, 100, 0);
+		choiceDialog(friend1.name, "Do you want to help me?", { "Sure", "Sorry, I cant right now. (leave)" }, 30, 100, 0);
 		visitedDad = true;
-		int choice_dad;
+		int choice_Side1;
 		printf("> ");
-		cin >> choice_dad;
-		switch (choice_dad) {
+		cin >> choice_Side1;
+		switch (choice_Side1) {
 		case 1: // accept
-			mainChar.cord = "A22";
+			typeDialog(friend1.name, "Let's get a move on then!");
+			mainChar.cord = "S1";
 			break;
 		case 2: // deny
-			mainChar.cord = "A23";
+			mainChar.cord = "A8";
 			break;
 		default: // deny
-			mainChar.cord = "A23";
+			mainChar.cord = "A8";
 			break;
 		}
 	}
+
+};
+
+void Last_escape(bool acceptQuest){ // quest4
+	bool LastEscapeQuest_acceptedQuest = false;
+	bool LastEscapeQuest_waitingReward = false;
+	bool LastEscapeQuest_gotReward = false;
+	for (auto& quest : mainChar.quests) {
+		if (quest.name == (string)"Last escape") {
+			LastEscapeQuest_acceptedQuest = true;
+			if (quest.progress == (string)"COMPLETED") {
+				LastEscapeQuest_gotReward = true;
+			}
+		}
+	}
+
+	if (!acceptQuest && !visitedSide2) {
+		typeDialog(friend2.name, " YOU ARE HERE!");
+		typeDialog(mainChar.name, "Well well well.");
+		typeDialog(friend2.name, "You little bastard made it.");
+		typeDialog(mainChar.name, "Of course I did, who do you think I am?");
+		typeDialog(friend2.name, "I met some weird things on my way out. Want to help me get rid of them?");
+		typeDialog(mainChar.name, " If we can get out of here then yes.");
+		choiceDialog(friend2.name, "Shall we go then?", { "Sure", "Sorry, I cant right now. (leave)" }, 30, 100, 0);
+		visitedSide2 = true;
+		int choice_Side2;
+		printf("> ");
+		cin >> choice_Side2;
+		switch (choice_Side2) {
+		case 1: // accept
+			typeDialog(friend2.name, "Davai!");
+			mainChar.cord = "S1";
+			break;
+		case 2: // deny
+			mainChar.cord = "A10";
+			break;
+		default: // deny
+			mainChar.cord = "A10";
+			break;
+		}
+	}
+	else if (!acceptQuest) {
+		typeDialog(friend1.name, "We should go asap!", 45, 100, 0);
+		choiceDialog(friend1.name, "Shall we go?", { "Sure", "Sorry, I cant right now. (leave)" }, 30, 100, 0);
+		visitedDad = true;
+		int choice_Side2;
+		printf("> ");
+		cin >> choice_Side2;
+		switch (choice_Side2) {
+		case 1: // accept
+			typeDialog(friend1.name, "Davai!");
+			mainChar.cord = "S1";
+			break;
+		case 2: // deny
+			mainChar.cord = "A10";
+			break;
+		default: // deny
+			mainChar.cord = "A10";
+			break;
+		}
+	}
+
 }
+
+
+
+
 void openInventory() {
     clearWnd();
     typeText(mainChar.name +" - Inventory");
@@ -470,6 +582,7 @@ void deathOccur() {
     exploreLabyrinth();
 }
 
+string cord;
 void exploreLabyrinth() {
     while (inLabyrinth) { // hell loop
         clearWnd();
@@ -477,13 +590,11 @@ void exploreLabyrinth() {
         if (!mainChar.quests.size() == 0) {
             cout << "\n";
             for (int i = 0; i < mainChar.quests.size(); ++i) {
-                if (mainChar.quests[i].progress != (string)"COMPLETED") {
-                    cout << " " << to_string(i + 1) << ". " << mainChar.quests[i].name << " : \"" << mainChar.quests[i].description << "\" : " << mainChar.quests[i].progress << "\n";
-                }
+                cout << " " << to_string(i + 1) << ". " << mainChar.quests[i].name << " : \"" << mainChar.quests[i].description << "\" : " << mainChar.quests[i].progress << "\n";
             }
             cout << "\n\n";
         }
-        string cord = mainChar.cord;
+        cord = mainChar.cord;
         // noid
         if (cord == (string)"N1") {
             noidDialog();
@@ -531,27 +642,195 @@ void exploreLabyrinth() {
             }
 		}
 		if (cord == (string)"Q2") {
+            bool dadQuest_acceptedQuest = false;
+            bool dadQuest_gotReward = false;
 
+            for (auto& quest : mainChar.quests) {
+                if (quest.name == (string)"Welcome back dad!") {
+                    dadQuest_acceptedQuest = true;
+                    if (quest.progress == (string)"COMPLETED") {
+                        dadQuest_gotReward = true;
+                    }
+                }
+            }
+            if (!dadQuest_gotReward && visitedDad) {
+                // fight ghost
+                typeDialog("Dad", "SON THERE IS A GHOST!!", 10, 300, 0);
+                combatOccur(mainChar, ghost);
+            }
+            else {
+                choiceDialog("Narrator", "You see a pathway going south and west", { "Go South", "Go West", "Open Inventory", "Check Stats" });
+                int choice_A2;
+                printf("> ");
+                cin >> choice_A2;
+                switch (choice_A2) {
+                case 1: mainChar.cord = "A22"; break;
+                case 2: mainChar.cord = "A21"; break;
+                case 3: openInventory(); break;
+                case 4: checkStats(); break;
+                default: break;
+                }
+            }
+            
 		}
 		if (cord == (string)"Q3") {
+			bool collectingJewelryQuest_acceptedQuest = false;
+			bool collectingJewelryQuest_gotReward = false;
 
+			for (auto& quest : mainChar.quests) {
+				if (quest.name == (string)"Lost jewelry") {
+					collectingJewelryQuest_acceptedQuest = true;
+					if (quest.progress == (string)"COMPLETED") {
+						collectingJewelryQuest_gotReward = true;
+					}
+				}
+			}
+            if (!collectingJewelryQuest_gotReward && visitedSide2){
+                //fight juut
+                typeDialog(friend2.name,"I found the guys who stole my jewelry", 45, 1000, 0);
+                combatOccur(mainChar, jew);
+            }
+			else {
+				choiceDialog("Narrator", "You see a pathway going south and east", { "Go South", "Go East", "Open Inventory", "Check Stats" });
+				int choice_A2;
+				printf("> ");
+				cin >> choice_A2;
+				switch (choice_A2) {
+				case 1: mainChar.cord = "A20"; break;
+				case 2: mainChar.cord = "A21"; break;
+				case 3: openInventory(); break;
+				case 4: checkStats(); break;
+				default: break;
+				}
+			}
 		}
 		if (cord == (string)"Q4") {
+			bool escapingCaveQuest_acceptedQuest = false;
+			bool escapingCaveQuest_gotReward = false;
 
+			for (auto& quest : mainChar.quests) {
+				if (quest.name == (string)"Last escape?") {
+					escapingCaveQuest_acceptedQuest = true;
+					if (quest.progress == (string)"COMPLETED") {
+						escapingCaveQuest_gotReward = true;
+					}
+				}
+			}
+            if (!escapingCaveQuest_gotReward && visitedSide1){
+                // fight mdea veel
+                typeDialog(friend1.name, "These are the bugs who are blocking our escape");
+            }
+			else {
+				choiceDialog("Narrator", "You see a pathway going north, south, west and east", {"Go North", "Go South", "Go West", "Go East", "Open Inventory", "Check Stats" });
+				int choice_A2;
+				printf("> ");
+				cin >> choice_A2;
+				switch (choice_A2) {
+				case 1: mainChar.cord = "A29"; break;
+				case 2: mainChar.cord = "A16"; break;
+                case 3: mainChar.cord = "A31"; break;
+				case 4: mainChar.cord = "A17"; break;
+				case 5: openInventory(); break;
+				case 6: checkStats(); break;
+				default: break;
+				}
+			}
 		}
 		if (cord == (string)"Q5") {
 
 		}
         // Side char
 
-		if (cord == (string)"S1") {
+		if (cord == (string)"S1") { //escapingCave Last escape? Last_escape
+			bool escapingCaveQuest_acceptedQuest = false;
+			bool escapingCaveQuest_gotReward = false;
 
+			for (auto& quest : mainChar.quests) {
+				if (quest.name == (string)"Last escape?") {
+					escapingCaveQuest_acceptedQuest = true;
+					if (quest.progress == (string)"COMPLETED") {
+						escapingCaveQuest_gotReward = true;
+					}
+				}
+			}
+			if (!escapingCaveQuest_acceptedQuest) {
+				Last_escape(escapingCaveQuest_acceptedQuest);
+            }
+
+			else {
+				choiceDialog("Narrator", "You see a pathway going north south and west", { "Go North","Go South", "Go West", "Open Inventory", "Check Stats" });
+				int choice_A2;
+				printf("> ");
+				cin >> choice_A2;
+				switch (choice_A2) {
+				case 1: mainChar.cord = "A24"; break;
+				case 2: mainChar.cord = "A8"; break;
+				case 3: mainChar.cord = "A27"; break;
+				case 4: openInventory(); break;
+				case 5: checkStats(); break;
+				default: break;
+				}
+			}
 		}
         if (cord == (string)"S2") {
+			bool collectingJewelryQuest_acceptedQuest = false;
+			bool collectingJewelryQuest_gotReward = false;
+
+			for (auto& quest : mainChar.quests) {
+				if (quest.name == (string)"Lost jewelry") {
+					collectingJewelryQuest_acceptedQuest = true;
+					if (quest.progress == (string)"COMPLETED") {
+						collectingJewelryQuest_gotReward = true;
+					}
+				}
+			}
+			if (!collectingJewelryQuest_acceptedQuest) {
+				Lost_jewelry(collectingJewelryQuest_acceptedQuest);
+            }
+			   else {
+				choiceDialog("Narrator", "You see a pathway going south and west", { "Go South", "Go West", "Open Inventory", "Check Stats" });
+				int choice_A2;
+				printf("> ");
+				cin >> choice_A2;
+				switch (choice_A2) {
+				case 1: mainChar.cord = "A10"; break;
+				case 2: mainChar.cord = "A17"; break;
+				case 3: openInventory(); break;
+				case 4: checkStats(); break;
+				default: break;
+				}
+			}
+
 
 		}
         if (cord == (string)"S3") {
+            bool dadQuest_acceptedQuest = false;
+            bool dadQuest_gotReward = false;
 
+            for (auto& quest : mainChar.quests) {
+                if (quest.name == (string)"Welcome back dad!") {
+                    dadQuest_acceptedQuest = true;
+                    if (quest.progress == (string)"COMPLETED") {
+                        dadQuest_gotReward = true;
+                    }
+                }
+            }
+            if (!dadQuest_acceptedQuest) {
+                dad_quest(dadQuest_acceptedQuest);
+            }
+            else {
+                choiceDialog("Narrator", "You see a pathway going south and west", { "Go South", "Go West", "Open Inventory", "Check Stats" });
+                int choice_A2;
+                printf("> ");
+                cin >> choice_A2;
+                switch (choice_A2) {
+                case 1: mainChar.cord = "A23"; break;
+                case 2: mainChar.cord = "A22"; break;
+                case 3: openInventory(); break;
+                case 4: checkStats(); break;
+                default: break;
+                }
+            }
 		}
         if (cord == (string)"S4") {
 

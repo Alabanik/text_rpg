@@ -13,7 +13,6 @@ void choiceDialog(string talker, string text, vector<string> choices, int delay 
 void typeDialog(string talker, string text, int delay = 45, int endDelay = 50, int startDelay = 0);
 void makePage(string topMessage, vector<string> bottomMessages);
 void resizeConsole(int width, int height);
-//int choiceMove();
 void clearWnd();
 int getRandom(int min, int max);
 bool shouldCall(int prob);
