@@ -14,6 +14,7 @@ struct Item { // also counts for weapon
     int damage;
     int rarity; // 1-5, 1 common, 5-legendary (common, uncommon, rare, epic, legendary)
     bool isWeapon;
+    bool isDefence;
 };
 
 struct Quest {
@@ -41,9 +42,6 @@ struct Player {
     // other
     int gold; // Amount of money the main character has.
     vector<Item> inventory; // list of items, inventory.
-
-    Player(string playerName, string Class, string race, int level, int HPStat, int intStat, int strStat, int agiStat, int gold, vector<Item> inventory)
-        : name(playerName), className(Class), race(race), level(level), HPStat(HPStat), intStat(intStat), strStat(strStat), agiStat(agiStat), gold(gold), inventory(inventory) {}
 
     Item strongestWeapon(vector<Item> inventory) {
         if (inventory.empty()) {

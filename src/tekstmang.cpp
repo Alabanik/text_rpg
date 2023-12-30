@@ -10,33 +10,22 @@
 using namespace std;
 
 // Ideed
-// Save/load progress
-// vastased
+// 
+// vastased tehtud
 
 int main()
 {
     resizeConsole(1200, 600);
     clearWnd();
-    makePage("Welcome to this fantastic RPG, without a name. Enjoy!", {"Load Game", "New Game", "Settings", "About", "Quit Game"});
+    makePage("Welcome to this fantastic RPG, without a name. Enjoy!", {"Play", "About", "Quit Game"});
     int x;
     printf("> ");
     cin >> x;
     switch (x) {
         case 1:
-            // Load an already existing save.
-            printf("Nothing here");
-            break;
-        case 2:
-            // Make a new save
             startGame(false);
             break;
-        case 3:
-            // Settings, currently empty
-            // change text speed etc.
-            clearWnd();
-            main();
-            break;
-        case 4:
+        case 2:
             // The about section
             clearWnd();
             printf("Made by Atlaz and Alabanik\n");
@@ -44,15 +33,9 @@ int main()
             clearWnd();
             main();
             break;
-        case 5:
+        default:
             // Quit the game.
             exit(0);
-            break;
-        default:
-            // If the case isnt listed.
-            printf("Please enter valid number");
-            system("pause");
-            main();
             break;
     }
     // continue..

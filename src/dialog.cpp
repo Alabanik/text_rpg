@@ -22,17 +22,21 @@ bool isOutside = false; // 1
 bool hasSword = false; // 1
 bool inLabyrinth = false;
 bool isDadDead = false; // klui see ture = revart
+bool hasBeenFarm = false;
+bool hasLastStretchQuest = false;
+bool areFriendsDead = false;
+
 vector<string> lootedRooms;
+vector<string> defeatedBosses;
 // visited shit
 bool visitedWitch = true; //Q1
 bool visitedDad = false; //Q2
 bool visitedSide1 = false; //Q3
 bool visitedSide2 = false; //Q4
 
-
 // characters - mainChar.gold += 1000;
 // name, occupation, race, level, health, inteligence, str, agi, gold, inventory; 
-Player mainChar = { mc_name, "Adventurer", "Human", 0, 100, 0, 3, 8, 0, {} };
+Player mainChar = { mc_name, "Adventurer", "Human", "A1", {}, 0, 100, 0, 3, 8, 0, {} };
 // side
 sideChar mother = { "Mom", 45, 9, 0 };
 sideChar friend1 = { "John", 13 , 5, 0 }; //side 1
@@ -41,33 +45,45 @@ sideChar OldJack = { "Old Jack", 100 , 1, 0 };
 sideChar YoungJack = { "Young Jack", 100 , 1, 0 };
 sideChar Witch = { "Witch", 60 , 1, 0 }; //side 4
 sideChar Dad = {"Dad", 47, 5, 0}; //side 3
-
-
-Item juudiKaed = { "Juudi kaed", "Best for pickpockets", 5, 1, true };
+sideChar shopKeep1 = { "Winslow's Wonders Market", 100, 100, 999999999};
+sideChar shopKeep2 = {"Ivy's Curios Corner", 100, 100,  999999999};
 // enemy
 // name, hpstat, level, weapon, gold, minDmg, maxDmg
-Enemy jew = { "Juut", 20 ,1 ,juudiKaed, 0, 1, 4 };
+Enemy jew = { "Juut", 20 ,1 ,{}, 0, 1, 4};
 Enemy goblin = { "Goblin", 10, 1, {}, 0, 1, 4 };
 Enemy oldgoblin = { "Old Goblin", 50, 12, {}, 0, 10, 20 };
 Enemy ghost = { "Ghost", 50, 1, {}, 0, 5, 10 }; // Q2 enemy
+Enemy spider = { "Spider", 30, 1, {}, 0, 10, 20 }; // Q2 enemy
 Enemy mini1 = { "Salamander", 100, 1, {}, 0, 10, 20 };
-Enemy minm2 = { "Orphan Slaughterer", 250, 1, { }, 0, 20, 30};
+Enemy mini2 = { "Orphan Slaughterer", 250, 1, { }, 0, 20, 30};
 Enemy mini3 = { "Young Jack", 500, 1, { }, 0, 20, 50};
 Enemy boss = { "Old Jack", 10000, 250, { }, 0, 30, 70 };
 
 // weapons
-Item Sword = { "Sword", "This shit is almost broken", 4, 1, true};
-Item dagger = { "Dagger", "Well it is something",1, 1, true };
-Item ironSword = { "Iron Sword", "A simple sword.. but its made out of iron.", 50, 1, true };
-Item magicalStaff = { "Magical Staff", "This has something magical to it.", 100, 1, true };
-Item scaleSword = { "Scale Sword", "A sword made out of scales.. SCALES!", 350, 1, true };
-Item dragonSword = { "Dragon Sword", "Aincent Sword made out of dragons bone.", 500, 1, true };
-Item copperSword = { "Copper Sword", "Budget-friendly with modest cutting capabilities", 25,1, true};
+Item Sword = { "Sword", "This shit is almost broken", 4, 1, true, false};
+Item dagger = { "Dagger", "Well it is something",1, 1, true, false};
+Item ironSword = { "Iron Sword", "A simple sword.. but its made out of iron.", 50, 1, true, false };
+Item magicalStaff = { "Magical Staff", "This has something magical to it.", 100, 1, true, false };
+Item scaleSword = { "Scale Sword", "A sword made out of scales.. SCALES!", 350, 1, true, false };
+Item dragonSword = { "Dragon Sword", "Aincent Sword made out of dragons bone.", 500, 1, true, false };
+Item copperSword = { "Copper Sword", "Budget-friendly with modest cutting capabilities", 25,1, true, false };
+Item OpSword = { "Op Sword", "Fucking cheater", 10000000,1,true, false };
+// other items
+Item cuteCatEars = {"Cute Cat ears", "Has no purpose", 25 ,1, false, true };
+Item hpPotion = { "Health Potion", "Gives you a pat on the back.", 25, 1, false, false };
+Item BhpPotion = { "Big Health Potion", "Gives you a bigger pat on the back.", 50, 1, false, false };
+Item armor = { "Armor", "Gives you some extra protection if you know what I mean", 50, 1,false, true };
+
 // quests
 Quest noiaQuest = { "Old Goblin", "Retrive the stolen magical hat.", "IN_PROGRESS" }; //Q1
 Quest dadQuest = { "Welcome back dad!", "Escape the labyrinth with dad", "IN_PROGRESS" };//Q2
 Quest collectingJewelry = { "Lost jewelry", "Retrieve John's jewelry", "IN_PROGRESS" }; //Q3
 Quest escapingCave = { "Last escape?", "Escape the dungeon with William", "IN_PROGRESS" }; //Q4
+Quest lastStretch = {"Last stretch", "null", "IN_PROGRESS"};
+Quest miniBoss_1 = { "Beat Salamander", "null", "IN_PROGRESS" };
+Quest miniBoss_2 = { "Beat Orphan Slaughterer", "null", "IN_PROGRESS" };
+Quest miniBoss_3 = { "Beat Young Jack", "null", "IN_PROGRESS" };
+Quest finalBoss = { "Beat Old Jack", "Beat Old Jack to escape the cave!!!!!!!!!!", "IN_PROGRESS" };
 
 // functions
 void startGame(bool after_death); // d
@@ -84,7 +100,7 @@ void checkStats(); // d
 void openInventory(); // d
 void Lost_jewelry(bool acceptQuest);
 void Last_escape(bool acceptQuest);
-
+void Pood(string t_cord);
 
 void startGame(bool after_death) { // algus
     clearWnd();
@@ -93,11 +109,12 @@ void startGame(bool after_death) { // algus
         printf("Enter your name: ");
         cin >> mc_name;
         mainChar.name = mc_name;
+        lastStretch.description = "William and " + mc_name + " have found more intel to escape the dungeon";
         clearWnd();
-        //typeText("You start waking up from a deep sleep, your throat parched and body heavy.", 50, 25, 1000);
-        //typeText("The air is thick with unfamiliar stillness, and as you open your eyes,", 50, 25, 100);
-        //typeText("Your gaze follows the faint glow that beckons from the end of a narrow tunnel", 50, 25, 100);
-        //typeText("A surge of fear courses through you, and you start thinking about the past you have been through.", 50, 1000, 100);
+        typeText("You start waking up from a deep sleep, your throat parched and body heavy.", 50, 25, 1000);
+        typeText("The air is thick with unfamiliar stillness, and as you open your eyes,", 50, 25, 100);
+        typeText("Your gaze follows the faint glow that beckons from the end of a narrow tunnel", 50, 25, 100);
+        typeText("A surge of fear courses through you, and you start thinking about the past you have been through.", 50, 1000, 100);
     }
     choiceDialog("Narrator", "(Would you like to skip the dialog?)", { "Yes, I have already read through it.", "Id rather read it." }, 30, 60, 0);
     int choice_2;
@@ -320,6 +337,9 @@ void noidDialog() { // quest 1
         typeDialog(Witch.name, "Your heroism won't be forgotten.", 45, 100, 0);
         typeDialog(Witch.name, "Before exiting the cave you have to defeat 3 minibosses and final boss. Wander around and be careful goblins and other creatures have infested the place.", 45, 100, 0);
         mainChar.gold += 50;
+        mainChar.quests.push_back(miniBoss_1);
+        mainChar.quests.push_back(miniBoss_2);
+        mainChar.quests.push_back(miniBoss_3);
         for (auto& quest : mainChar.quests) {
             if (quest.name == (string)"Old Goblin") {
                 quest.progress = "COMPLETED";
@@ -343,7 +363,6 @@ void noidDialog() { // quest 1
         }
     }
 }
-
 
 void dad_quest(bool acceptQuest) { // quest 2
     if (!acceptQuest && !visitedDad) {
@@ -383,6 +402,7 @@ void dad_quest(bool acceptQuest) { // quest 2
         cin >> choice_dad;
         switch (choice_dad) {
         case 1: // accept
+			mainChar.quests.push_back(dadQuest);
             mainChar.cord = "A22";
             break;
         case 2: // deny
@@ -396,6 +416,58 @@ void dad_quest(bool acceptQuest) { // quest 2
 
 }
 
+void Pood(string t_cord) {
+    clearWnd();
+    if (t_cord == (string)"P1") {
+        typeText("You have " + to_string(mainChar.gold) + " gold.");
+        choiceDialog(shopKeep1.name, "What would you like to purchase?", { "Health potion (50 G)", "Cute cat ears (199 G)", "Copper sword(100 G)", "Leave the store."}, 20, 600, 100);
+        int shop;
+        cin >> shop;
+        switch (shop) {
+        case 1:
+            mainChar.inventory.push_back(hpPotion);
+            mainChar.gold -= 50;
+            break;
+        case 2:
+            mainChar.inventory.push_back(cuteCatEars);
+            mainChar.gold -= 199;
+            break;
+        case 3:
+            mainChar.inventory.push_back(copperSword);
+            mainChar.gold -= 100;
+            break;
+        default:
+            break;
+        }
+    }
+    else if (t_cord == (string)"P2") {
+        // teine shop
+		typeText("You have " + to_string(mainChar.gold) + " gold.");
+		choiceDialog(shopKeep2.name, "What would you like to purchase?", { "Big health potion (70 G)", "Cute cat ears (199 G)", "Iron sword(100 G)", "Armor(250 G)", "Leave the store." }, 20, 600, 100);
+		int shop;
+		cin >> shop;
+		switch (shop) {
+		case 1:
+			mainChar.inventory.push_back(BhpPotion);
+			mainChar.gold -= 50;
+			break;
+		case 2:
+			mainChar.inventory.push_back(cuteCatEars);
+			mainChar.gold -= 199;
+			break;
+		case 3:
+			mainChar.inventory.push_back(ironSword);
+			mainChar.gold -= 100;
+			break;
+            case 4:
+				mainChar.inventory.push_back(armor);
+				mainChar.gold -= 100;
+				break;
+		default:
+			break;
+		}
+    }
+};
 
 void Lost_jewelry(bool acceptQuest) { //quest 3
 	bool LostJewelryQuest_acceptedQuest = false;
@@ -422,13 +494,14 @@ void Lost_jewelry(bool acceptQuest) { //quest 3
         switch (choice_Side1) {
             case 1: // accept
                 typeDialog(friend1.name,"Let's get a move on then!");
-                mainChar.cord = "S1";
+                mainChar.quests.push_back(collectingJewelry);
+                mainChar.cord = "S2";
                 break;
             case 2: // deny
-                mainChar.cord = "A8";
+                mainChar.cord = "A10";
                 break;
             default: // deny
-                mainChar.cord = "A8";
+                mainChar.cord = "A10";
                 break;
         }
     }else if (!acceptQuest) {
@@ -441,13 +514,14 @@ void Lost_jewelry(bool acceptQuest) { //quest 3
 		switch (choice_Side1) {
 		case 1: // accept
 			typeDialog(friend1.name, "Let's get a move on then!");
-			mainChar.cord = "S1";
+			mainChar.quests.push_back(collectingJewelry);
+			mainChar.cord = "S2";
 			break;
 		case 2: // deny
-			mainChar.cord = "A8";
+			mainChar.cord = "A10";
 			break;
 		default: // deny
-			mainChar.cord = "A8";
+			mainChar.cord = "A10";
 			break;
 		}
 	}
@@ -482,13 +556,14 @@ void Last_escape(bool acceptQuest){ // quest4
 		switch (choice_Side2) {
 		case 1: // accept
 			typeDialog(friend2.name, "Davai!");
+            mainChar.quests.push_back(escapingCave);
 			mainChar.cord = "S1";
 			break;
 		case 2: // deny
-			mainChar.cord = "A10";
+			mainChar.cord = "A8";
 			break;
 		default: // deny
-			mainChar.cord = "A10";
+			mainChar.cord = "A8";
 			break;
 		}
 	}
@@ -502,6 +577,7 @@ void Last_escape(bool acceptQuest){ // quest4
 		switch (choice_Side2) {
 		case 1: // accept
 			typeDialog(friend1.name, "Davai!");
+			mainChar.quests.push_back(escapingCave);
 			mainChar.cord = "S1";
 			break;
 		case 2: // deny
@@ -515,12 +591,9 @@ void Last_escape(bool acceptQuest){ // quest4
 
 }
 
-
-
-
 void openInventory() {
     clearWnd();
-    typeText(mainChar.name +" - Inventory");
+    typeText(mainChar.name + " - Inventory");
     typeText("Gold: " + to_string(mainChar.gold));
     typeText("List of items:");
     for (int i = 0; i < mainChar.inventory.size(); ++i) {
@@ -582,6 +655,15 @@ void deathOccur() {
     exploreLabyrinth();
 }
 
+bool didDefeatBoss(string Boss) {
+    for (auto& boss : defeatedBosses) {
+        if (boss == Boss) {
+            return true;
+        }
+    }
+    return false;
+}
+
 string cord;
 void exploreLabyrinth() {
     while (inLabyrinth) { // hell loop
@@ -595,6 +677,146 @@ void exploreLabyrinth() {
             cout << "\n\n";
         }
         cord = mainChar.cord;
+        
+        
+        //Boss loops
+        if (cord == (string)"M1") {
+            bool defeatM1 = didDefeatBoss("M1");
+            if (!defeatM1) {
+                choiceDialog("Narrator", "Do you want to challenge " + mini1.name, { "I think im strong enough", "Sadly i have to decline :(" }, 10, 100, 100);
+                int M1;
+                cin >> M1;
+                switch (M1) {
+                case 1:
+                    // accept
+                    typeDialog(mainChar.name,"(grim determination) Salamander, your fiery reign of terror ends here! I won't let you harm this realm any longer." );
+					typeDialog(mini1.name, "(sinister hiss) Mortal, you dare challenge the flames? Prepare to be consumed by the inferno you face!");
+                    combatOccur(mainChar, mini1);
+                    defeatedBosses.push_back("M1");
+                    break;
+                default:
+                    mainChar.cord = "A34";
+                }
+            }
+            else {
+                choiceDialog("Narrator", "You see a pathway going west and east", { "Go West", "Go East", "Open Inventory", "Check Stats" });
+                int choice_A11;
+                printf("> ");
+                cin >> choice_A11;
+                switch (choice_A11) {
+                case 1: mainChar.cord = "A42"; break;
+                case 2: mainChar.cord = "A34"; break;
+                case 3: openInventory(); break;
+                case 4: checkStats(); break;
+                default: break;
+                }
+            }
+        }
+
+        if (cord == (string)"M2") {
+            bool defeatM2 = didDefeatBoss("M2");
+            if (!defeatM2) {
+                choiceDialog("Narrator", "Do you want to challenge " + mini2.name, { "I think im strong enough", "Sadly i have to decline :(" }, 10, 100, 100);
+                int M2;
+                cin >> M2;
+                switch (M2) {
+                case 1:
+                    // accept
+                    typeDialog(mainChar.name, " (with a stern expression) Orphan Slaughterer, your merciless deeds end now! No more innocent lives will be taken by your hand.");
+					typeDialog(mini2.name, "(cold laughter) Mortals are so predictable, clinging to their fragile notions of justice. Prepare to witness true power! ");
+                    combatOccur(mainChar, mini2);
+                    defeatedBosses.push_back("M2");
+                    break;
+                default:
+                    mainChar.cord = "A34";
+                }
+            }
+            else {
+                choiceDialog("Narrator", "You see a pathway going west and east", { "Go West", "Go East", "Open Inventory", "Check Stats" });
+                int choice_M2;
+                printf("> ");
+                cin >> choice_M2;
+                switch (choice_M2) {
+                case 1: mainChar.cord = "A41"; break;
+                case 2: mainChar.cord = "A35"; break;
+                case 3: openInventory(); break;
+                case 4: checkStats(); break;
+                default: break;
+                }
+            }
+        }
+
+        if (cord == (string)"M3") {
+            bool defeatM3 = didDefeatBoss("M3");
+            if (!defeatM3) {
+                choiceDialog("Narrator", "Do you want to challenge " + mini3.name, { "I think im strong enough", "Sadly i have to decline :(" }, 10, 100, 100);
+                int M3;
+                cin >> M3;
+                switch (M3) {
+                case 1:
+                    // accept
+                    typeDialog(mainChar.name, "Young Jack, your journey down this twisted path ends here. Your father's darkness won't consume any more lives.");
+					typeDialog(mini3.name, " You know nothing about our struggles, outsider. This is the only way to survive in our world.");
+                    combatOccur(mainChar, mini3);
+                    defeatedBosses.push_back("M3");
+                    break;
+                default:
+                    mainChar.cord = "A36";
+                }
+            }
+            else {
+                choiceDialog("Narrator", "You see a pathway going west and east", { "Go West", "Go East", "Open Inventory", "Check Stats" });
+                int choice_M3;
+                printf("> ");
+                cin >> choice_M3;
+                switch (choice_M3) {
+                case 1: mainChar.cord = "A40"; break;
+                case 2: mainChar.cord = "A36"; break;
+                case 3: openInventory(); break;
+                case 4: checkStats(); break;
+                default: break;
+                }
+            }
+        }
+        
+
+        if (cord == (string)"FB1") {
+            bool defeatM1 = didDefeatBoss("FB1");
+            if (!defeatM1) {
+                choiceDialog("Narrator", "Do you want to challenge " + mini1.name, { "I think im strong enough", "Sadly i have to decline :(" }, 10, 100, 100);
+                int FB1;
+                cin >> FB1;
+                switch (FB1) {
+                case 1:
+                    // accept
+					typeDialog(finalBoss.name, " So, you've made it this far, little one. Impressive. But you cannot comprehend the power I wield.");
+					typeDialog(mainChar.name, "Your reign of darkness ends here, Old Jack. The pain and suffering you've caused won't persist any longer.");
+                    typeDialog(finalBoss.name, "(sinister chuckle) Pain, suffering... mere ingredients in the grand recipe of power. You think you can challenge what I've become?");
+					typeDialog(mainChar.name, "I may be just one, but the strength of my conviction surpasses the shadows you've embraced. It's time to face the consequences.");
+                    combatOccur(mainChar, boss);
+                    defeatedBosses.push_back("FB1");
+                    break;
+                default:
+                    mainChar.cord = "L2";
+                }
+            }
+            else {
+                choiceDialog("Narrator", "You see a pathway going west and east", { "Go West", "Go East", "Open Inventory", "Check Stats" });
+                int choice_FB1;
+                printf("> ");
+                cin >> choice_FB1;
+                switch (choice_FB1) {
+                case 1: mainChar.cord = "A42"; break;
+                case 2: mainChar.cord = "A34"; break;
+                case 3: openInventory(); break;
+                case 4: checkStats(); break;
+                default: break;
+                }
+            }
+        }
+        
+        
+        
         // noid
         if (cord == (string)"N1") {
             noidDialog();
@@ -642,6 +864,7 @@ void exploreLabyrinth() {
             }
 		}
 		if (cord == (string)"Q2") {
+            // dad quest
             bool dadQuest_acceptedQuest = false;
             bool dadQuest_gotReward = false;
 
@@ -653,7 +876,7 @@ void exploreLabyrinth() {
                     }
                 }
             }
-            if (!dadQuest_gotReward && visitedDad) {
+            if (dadQuest_acceptedQuest && !dadQuest_gotReward && visitedDad) {
                 // fight ghost
                 typeDialog("Dad", "SON THERE IS A GHOST!!", 10, 300, 0);
                 combatOccur(mainChar, ghost);
@@ -685,9 +908,9 @@ void exploreLabyrinth() {
 					}
 				}
 			}
-            if (!collectingJewelryQuest_gotReward && visitedSide2){
+            if (collectingJewelryQuest_acceptedQuest && !collectingJewelryQuest_gotReward && visitedSide1){
                 //fight juut
-                typeDialog(friend2.name,"I found the guys who stole my jewelry", 45, 1000, 0);
+                typeDialog(friend1.name,"I found the guys who stole my jewelry", 45, 1000, 0);
                 combatOccur(mainChar, jew);
             }
 			else {
@@ -716,11 +939,22 @@ void exploreLabyrinth() {
 					}
 				}
 			}
-            if (!escapingCaveQuest_gotReward && visitedSide1){
-                // fight mdea veel
-                typeDialog(friend1.name, "These are the bugs who are blocking our escape");
+            if (escapingCaveQuest_acceptedQuest && !escapingCaveQuest_gotReward && visitedSide2){
+                // fight mdea 
+                typeDialog(friend2.name, "These are the bugs who are blocking our escape");
+                combatOccur(mainChar, spider);
             }
 			else {
+                // annab quest 5
+                if (escapingCaveQuest_gotReward && !hasLastStretchQuest) {
+                    mainChar.quests.push_back(lastStretch);
+                    for (auto& quest : mainChar.quests) {
+                        if (quest.name == (string)"Last stretch") {
+                            hasLastStretchQuest = true;
+                            break;
+                        }
+                    }
+                }
 				choiceDialog("Narrator", "You see a pathway going north, south, west and east", {"Go North", "Go South", "Go West", "Go East", "Open Inventory", "Check Stats" });
 				int choice_A2;
 				printf("> ");
@@ -736,12 +970,33 @@ void exploreLabyrinth() {
 				}
 			}
 		}
-		if (cord == (string)"Q5") {
-
-		}
+        if (cord == (string)"Q5") {
+            // LAST STRETCH
+            if (!areFriendsDead) {
+                for (auto& quest : mainChar.quests) {
+                    if (quest.name == (string)"Last stretch") {
+                        quest.progress = "COMPLETED";
+                        areFriendsDead = true;
+                        typeDialog("Narrator", "You hear a bang and look back, your frinds have fallen through the floor and died", 20, 400, 0);
+                    }
+                }
+            }
+            choiceDialog("Narrator", "You see a pathway going north, west and east", { "Go North", "Go West", "Go East", "Open Inventory", "Check Stats" });
+            int choice_A2;
+            printf("> ");
+            cin >> choice_A2;
+            switch (choice_A2) {
+            case 1: mainChar.cord = "A20"; break;
+            case 2: mainChar.cord = "A19"; break;
+            case 3: mainChar.cord = "A18"; break;
+            case 4: openInventory(); break;
+            case 5: checkStats(); break;
+            default: break;
+            }
+        }
         // Side char
 
-		if (cord == (string)"S1") { //escapingCave Last escape? Last_escape
+		if (cord == (string)"S1") { //escapingCave Last escape? Last_escape 
 			bool escapingCaveQuest_acceptedQuest = false;
 			bool escapingCaveQuest_gotReward = false;
 
@@ -786,19 +1041,18 @@ void exploreLabyrinth() {
 			}
 			if (!collectingJewelryQuest_acceptedQuest) {
 				Lost_jewelry(collectingJewelryQuest_acceptedQuest);
-            }
-			   else {
-				choiceDialog("Narrator", "You see a pathway going south and west", { "Go South", "Go West", "Open Inventory", "Check Stats" });
-				int choice_A2;
-				printf("> ");
-				cin >> choice_A2;
-				switch (choice_A2) {
-				case 1: mainChar.cord = "A10"; break;
-				case 2: mainChar.cord = "A17"; break;
-				case 3: openInventory(); break;
-				case 4: checkStats(); break;
-				default: break;
-				}
+            } else {
+			    choiceDialog("Narrator", "You see a pathway going south and west", { "Go South", "Go West", "Open Inventory", "Check Stats" });
+			    int choice_A2;
+			    printf("> ");
+			    cin >> choice_A2;
+			    switch (choice_A2) {
+			        case 1: mainChar.cord = "A10"; break;
+			        case 2: mainChar.cord = "A17"; break;
+			        case 3: openInventory(); break;
+			        case 4: checkStats(); break;
+			        default: break;
+			    }
 			}
 
 
@@ -833,9 +1087,149 @@ void exploreLabyrinth() {
             }
 		}
         if (cord == (string)"S4") {
-
+            // noid annab magical staffi
+			bool hasBeenHere = hasBeenInLootroom("S4");
+            if (!hasBeenHere) {
+				typeDialog(mainChar.name, "Witch? WHat are you doing here?");
+				typeDialog(Witch.name, "Ahh! Don’t scare me like that. I’m just wandering around.");
+				typeDialog(mainChar.name, "Huh, Okei. Well I’m in some need of weapons can you help me with that?");
+				typeDialog(Witch.name, "Let me look at what I got.");
+                mainChar.inventory.push_back(magicalStaff);
+                lootedRooms.push_back("S4");
+            }
+            else {
+                // do something else
+                typeDialog(Witch.name, "Get Out of here!");
+                mainChar.cord = "A43";
+            };
 		}
 
+        // misc catecory
+        if (cord == (string)"F1") { // t
+          
+
+            if(!hasBeenFarm) { // kui ei ole olnud farmis
+				typeDialog("Narrator", "The dilapidated farmcave stood as a weathered testament to seasons long gone, its timeworn walls echoing whispers of bygone harvests and the echoes of laughter that once filled the rustic air.", 20, 3000, 100);
+                hasBeenFarm = true;
+            }
+            else {
+                choiceDialog("Narrator", "You see a pathway going west and east", { "Go West", "Go East", "Open Inventory", "Check Stats" });
+                int choice_A1;
+                printf("> ");
+                cin >> choice_A1;
+                switch (choice_A1) {
+                case 1: mainChar.cord = "A43"; break;
+                case 2: mainChar.cord = "A44"; break;
+                case 3: openInventory(); break;
+                case 4: checkStats(); break;
+                default: break;
+                }
+            }
+        }
+        if (cord == (string)"P1") { // t
+            choiceDialog("Narrator", "Do you want to enter the shop?", { "Yes", "No" }, 40, 100, 0);
+            int shop_choice_1;
+            printf("> ");
+            cin >> shop_choice_1;
+            switch (shop_choice_1) {
+                case 1:
+                    Pood("P1");
+                    break;
+                default:
+                    choiceDialog("Narrator", "You see a pathway going north, south, east and west", { "Go North", "Go South", "Go East", "Go West", "Open Inventory", "Check Stats" });
+                    int choice_A1;
+                    printf("> ");
+                    cin >> choice_A1;
+                    switch (choice_A1) {
+                        case 1: mainChar.cord = "A26"; break;
+                        case 2: mainChar.cord = "A28"; break;
+                        case 3: mainChar.cord = "A25"; break;
+                        case 4: mainChar.cord = "A30"; break;
+                        case 5: openInventory(); break;
+                        case 6: checkStats(); break;
+                        default: break;
+                    }
+                    break;
+            }
+        }
+		if (cord == (string)"P2") { // t
+            choiceDialog("Narrator", "Do you want to enter the shop?", { "Yes", "No" }, 40, 100, 0);
+            int shop_choice_1;
+            printf("> ");
+            cin >> shop_choice_1;
+            switch (shop_choice_1) {
+            case 1:
+                Pood("P2");
+                break;
+            default:
+                choiceDialog("Narrator", "You see a pathway going south, east and west", { "Go South", "Go East", "Go West", "Open Inventory", "Check Stats" });
+                int choice_A1;
+                printf("> ");
+                cin >> choice_A1;
+                switch (choice_A1) {
+                case 1: mainChar.cord = "A45"; break;
+                case 2: mainChar.cord = "L2"; break;
+                case 3: mainChar.cord = "A44"; break;
+                case 4: openInventory(); break;
+                case 5: checkStats(); break;
+                default: break;
+                }
+                break;
+            }
+		}
+        if(cord == (string)"HP1") {
+            choiceDialog("Narrator", "Do you want to dip into the magic pool?", { "Yes", "No" });
+            int aaaaa;
+            cin >> aaaaa;
+            switch (aaaaa) {
+                case 1:
+                    typeText("You feel better and find your health better than before");
+                    mainChar.HPStat = 100;
+                    break;
+                case 2:
+                    choiceDialog("Narrator", "You see a pathway going west and north.", { "Go West", "Go north", "Open Inventory", "Check Stats" });
+                    int choice_A1;
+                    printf("> ");
+                    cin >> choice_A1;
+                    switch (choice_A1) {
+                        case 1: mainChar.cord = "A5"; break;
+                        case 2: mainChar.cord = "A4"; break;
+                        case 3: openInventory(); break;
+                        case 4: checkStats(); break;
+                        default: break;
+                    }
+                default:
+                    break;
+            }
+        }
+		if (cord == (string)"HP2"){
+			choiceDialog("Narrator", "Do you want to teleport to the magic pool?", { "Yes", "No" });
+			int aaaaa;
+			cin >> aaaaa;
+            switch (aaaaa) {
+            case 1:
+				typeText(" You teleported to the magic pool");
+                mainChar.cord = "HP1";
+                break;
+            case 2:
+                mainChar.cord = "A38";
+                break;
+            default: break;
+            }
+        }
+		if (cord == (string)"L2") {
+			choiceDialog("Narrator", "You see a pathway going west and east.", { "Go West", "Go East", "Open Inventory", "Check Stats" });
+			int choice_A1;
+			printf("> ");
+			cin >> choice_A1;
+			switch (choice_A1) {
+			case 1: mainChar.cord = "P2"; break;
+			case 2: mainChar.cord = "FB1"; break;
+			case 3: openInventory(); break;
+			case 4: checkStats(); break;
+			default: break;
+			}
+		}
         //LT catecory
 		if (cord == (string)"LT1") {
             callCombat(jew);
@@ -848,7 +1242,7 @@ void exploreLabyrinth() {
             }
             else {
                 // do something else
-                typeText(" The room has been already looted");
+                typeText("The room has been already looted");
             }
 			choiceDialog("Narrator", "You see a pathway going north, south and west", { "Go North","Go South", "Go West", "Open Inventory", "Check Stats" });
 			int choice_lt1;
