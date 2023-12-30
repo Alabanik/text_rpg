@@ -124,9 +124,6 @@ void startGame(bool after_death) { // algus
     case 1:
         // skip the dialog.
         mainChar.inventory.push_back(Sword);
-        mainChar.inventory.push_back(hpPotion);
-        mainChar.inventory.push_back(hpPotion);
-        mainChar.inventory.push_back(hpPotion);
         typeText("tl;dr : Your friends decided to open a chest inside a cave.");
         caveChoice_2(true);
         break;

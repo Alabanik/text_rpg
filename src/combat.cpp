@@ -34,7 +34,7 @@ int calcDefence(vector<Item>& inventory, int attack_hand) {
 int getHealthPotion(Player mainChar) {
     int amount = 0;
     for (auto& item : mainChar.inventory) {
-        if (item.name == (string)"Big Health Potion") {
+        if (item.name == "Health Potion") {
             amount += 1;
         }
     }
@@ -44,7 +44,7 @@ int getHealthPotion(Player mainChar) {
 int getBigHealthPotion(Player mainChar) {
     int amount = 0;
     for (auto& item : mainChar.inventory) {
-        if (item.name == (string)"Big Health Potion") {
+        if (item.name == "Big Health Potion") {
             amount += 1;
         }
     }
@@ -86,7 +86,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                     attack_dmg_hand = attack_dmg_hand * 2;
                 }
                 if (strongestWpn.damage != 0) {// if the player even has a weapon to attack with
-                    choiceDialog("Goblin", "No like humans. Humans bad.", { "Attack with " + strongestWpn.name, "Attack with your hands", "Use 'Health Potion'",  "Block next attack"}, 20, 40, 0);
+                    choiceDialog("Goblin", "No like humans. Humans bad.", { "Attack with " + strongestWpn.name, "Attack with your hands", "Use 'Health Potion' (" + to_string(healthpotions) + ")",  "Block next attack"}, 20, 40, 0);
                     int attack_choice;
                     printf("> ");
                     cin >> attack_choice;
@@ -130,7 +130,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                     case 3:
                         if (healthpotions == 0) {
                             yourTurn = true;
-                            typeText("You dont have any 'Health Potions'");
+                            typeText("You dont have any 'Health Potions'", 20, 1000, 0);
                         }
                         else {
                             removeFromInventory(mainChar.inventory, "Health Potion");
@@ -141,32 +141,8 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                             else {
                                 mainChar.HPStat += rem_health;
                             }
+                            typeText("You used 1 'Health Potion'.", 20, 1000, 0);
                         }
-                        break;
-                    default:
-                        blockNext = true;
-                        break;
-                    }
-                }
-                else {
-                    choiceDialog("Goblin", "Munch crunch tasty bones! Humans weak.", { "Attack with your hands", "Block next attack" }, 20, 40, 0);
-                    int attack_choice;
-                    printf("> ");
-                    cin >> attack_choice;
-                    switch (attack_choice) {
-                    case 1:
-                        enemy_t.HPstat -= attack_dmg;
-                        if (enemy_t.HPstat > 0) {
-                            typeText("You attacked the " + enemy_t.name + " and dealt " + to_string(attack_dmg) + " damage!", 30, 1000, 0);
-                        }
-                        else {
-                            typeText("You have killed the " + enemy_t.name + "!", 30, 1000, 0);
-                            int reward = getRandom(1, 10);
-                            typeText("You received " + to_string(reward) + " gold.");
-                            mainChar.gold += reward;
-                            isDefeated = true;
-                        }
-                        // attack with weapon
                         break;
                     default:
                         blockNext = true;
@@ -265,37 +241,6 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                             blockNext = true;
                             break;
                     }
-                }
-                else {
-                    choiceDialog("Old Goblin", "You have no chance winning against me.", { "Attack with your hands", "Block next attack" }, 20, 40, 0);
-                    int attack_choice;
-                    printf("> ");
-                    cin >> attack_choice;
-                    switch (attack_choice) {
-                        case 1:
-                            enemy_t.HPstat -= attack_dmg;
-                            if (enemy_t.HPstat > 0) {
-                                typeText("You attacked the " + enemy_t.name + " and dealt " + to_string(attack_dmg) + " damage!", 30, 1000, 0);
-                            }
-                            else {
-                                typeText("You have killed the " + enemy_t.name + "!", 30, 1000, 0);
-                                for (Quest& quest : mainChar.quests) {
-                                    if (quest.name == (string)"Old Goblin") {
-                                        quest.progress = "WAITING_FOR_REWARD";
-                                        break;
-                                    }
-                                }
-                                int reward = getRandom(75, 100);
-                                typeText("You received " + to_string(reward) + " gold.");
-                                mainChar.gold += reward;
-                                isDefeated = true;
-                            }
-                            // attack with weapon
-                            break;
-                        default:
-                            blockNext = true;
-                            break;
-                        }
                 }
             }
             else {
@@ -780,7 +725,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                 case 3:
                     if (bighealthpotions == 0) {
                         yourTurn = true;
-                        typeText("You dont have any 'Big Health Potions'");
+                        typeText("You dont have any 'Big Health Potions'", 20, 1000, 0);
                     }
                     else {
                         removeFromInventory(mainChar.inventory, "Big Health Potion");
@@ -791,12 +736,13 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         else {
                             mainChar.HPStat += rem_health;
                         }
+                        typeText("You used 1 'Big Health Potion'.", 20, 1000, 0);
                     }
                     break;
                 case 4:
                     if (healthpotions == 0) {
                         yourTurn = true;
-                        typeText("You dont have any 'Health Potions'");
+                        typeText("You dont have any 'Health Potions'", 20, 1000, 0);
                     }
                     else {
                         removeFromInventory(mainChar.inventory, "Health Potion");
@@ -807,6 +753,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         else {
                             mainChar.HPStat += rem_health;
                         }
+                        typeText("You used 1 'Health Potion'.", 20, 1000, 0);
                     }
                     break;
                 default:
@@ -911,7 +858,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                 case 3:
                     if (bighealthpotions == 0) {
                         yourTurn = true;
-                        typeText("You dont have any 'Big Health Potions'");
+                        typeText("You dont have any 'Big Health Potions'", 20, 1000, 0);
                     }
                     else {
                         removeFromInventory(mainChar.inventory, "Big Health Potion");
@@ -922,12 +869,13 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         else {
                             mainChar.HPStat += rem_health;
                         }
+                        typeText("You used 1 'Big Health Potion'.", 20, 1000, 0);
                     }
                     break;
                 case 4:
                     if (healthpotions == 0) {
                         yourTurn = true;
-                        typeText("You dont have any 'Health Potions'");
+                        typeText("You dont have any 'Health Potions'", 20, 1000, 0);
                     }
                     else {
                         removeFromInventory(mainChar.inventory, "Health Potion");
@@ -938,6 +886,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         else {
                             mainChar.HPStat += rem_health;
                         }
+                        typeText("You used 1 'Health Potion'.", 20, 1000, 0);
                     }
                     break;
                 default:
@@ -1042,7 +991,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                 case 3:
                     if (bighealthpotions == 0) {
                         yourTurn = true;
-                        typeText("You dont have any 'Big Health Potions'");
+                        typeText("You dont have any 'Big Health Potions'", 20, 1000, 0);
                     }
                     else {
                         removeFromInventory(mainChar.inventory, "Big Health Potion");
@@ -1053,12 +1002,13 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         else {
                             mainChar.HPStat += rem_health;
                         }
+                        typeText("You used 1 'Big Health Potion'.", 20, 1000, 0);
                     }
                     break;
                 case 4:
                     if (healthpotions == 0) {
                         yourTurn = true;
-                        typeText("You dont have any 'Health Potions'");
+                        typeText("You dont have any 'Health Potions'", 20, 1000, 0);
                     }
                     else {
                         removeFromInventory(mainChar.inventory, "Health Potion");
@@ -1069,6 +1019,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         else {
                             mainChar.HPStat += rem_health;
                         }
+                        typeText("You used 1 'Health Potion'.", 20, 1000, 0);
                     }
                     break;
                 default:
@@ -1177,7 +1128,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                 case 3:
                     if (bighealthpotions == 0) {
                         yourTurn = true;
-                        typeText("You dont have any 'Big Health Potions'");
+                        typeText("You dont have any 'Big Health Potions'", 20, 1000, 0);
                     }
                     else {
                         removeFromInventory(mainChar.inventory, "Big Health Potion");
@@ -1188,12 +1139,13 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         else {
                             mainChar.HPStat += rem_health;
                         }
+                        typeText("You used 1 'Big Health Potion'.", 20, 1000, 0);
                     }
                     break;
                 case 4:
                     if (healthpotions == 0) {
                         yourTurn = true;
-                        typeText("You dont have any 'Health Potions'");
+                        typeText("You dont have any 'Health Potions'", 20, 1000, 0);
                     }
                     else {
                         removeFromInventory(mainChar.inventory, "Health Potion");
@@ -1204,6 +1156,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         else {
                             mainChar.HPStat += rem_health;
                         }
+                        typeText("You used 1 'Health Potion'.", 20, 1000, 0);
                     }
                     break;
                 default:
