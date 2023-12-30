@@ -1,8 +1,0 @@
-﻿  combat.cpp
-  dialog.cpp
-  tekstmang.cpp
-  utils.cpp
-  Generating Code...
-  LINK : C:\Users\atluzka\Downloads\text_rpg-main\text_rpg-main\x64\Debug\tekstmang.exe not found or not built by the last incremental link; performing full link
-dialog.obj : error LNK2019: unresolved external symbol "bool __cdecl shouldCall(double)" (?shouldCall@@YA_NN@Z) referenced in function "void __cdecl callCombat(struct Player)" (?callCombat@@YAXUPlayer@@@Z)
-C:\Users\atluzka\Downloads\text_rpg-main\text_rpg-main\x64\Debug\tekstmang.exe : fatal error LNK1120: 1 unresolved externals
