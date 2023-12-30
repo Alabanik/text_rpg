@@ -31,36 +31,47 @@ int calcDefence(vector<Item>& inventory, int attack_hand) {
     return max(1, remainingAttack);
 }
 
-int getHealthPotion(vector<Item>& inventory) {
-    for (auto& item : inventory) {
-        int amount = 0;
-        if (item.name == (string)"Health Potion") {
-            amount += 1;
-        }
-        return amount;
-    }
-}
-
-int getBigHealthPotion(vector<Item>& inventory) {
-    for (auto& item : inventory) {
-        int amount = 0;
+int getHealthPotion(Player mainChar) {
+    int amount = 0;
+    for (auto& item : mainChar.inventory) {
         if (item.name == (string)"Big Health Potion") {
             amount += 1;
         }
-        return amount;
+    }
+    return amount;
+}
+
+int getBigHealthPotion(Player mainChar) {
+    int amount = 0;
+    for (auto& item : mainChar.inventory) {
+        if (item.name == (string)"Big Health Potion") {
+            amount += 1;
+        }
+    }
+    return amount;
+}
+
+void removeFromInventory(vector<Item>& inventory, string itemName) {
+    auto it = std::find_if(inventory.begin(), inventory.end(),
+        [&itemName](const Item& item) {
+            return item.name == itemName;
+        });
+    if (it != inventory.end()) {
+        inventory.erase(it);
     }
 }
+
 
 void combatOccur(Player& mainChar, Enemy enemy) {
     Enemy enemy_t = enemy; // temporary variable for the enemy
     bool isDefeated = false;
     bool yourTurn = true;
     bool blockNext = false;
-    int bighealthpotions = getBigHealthPotion(mainChar.inventory);
-    int healthpotions = getHealthPotion(mainChar.inventory);
     Item strongestWpn = mainChar.strongestWeapon(mainChar.inventory);
     while (!isDefeated) {
         clearWnd();
+        int bighealthpotions = getBigHealthPotion(mainChar);
+        int healthpotions = getHealthPotion(mainChar);
         if (enemy_t.name == (string)"Goblin") {
             typeText("COMBAT MODE: Your enemy is " + enemy_t.name + " [HP: " + to_string(enemy_t.HPstat) + "]", 10, 300, 0);
             typeText("Your health -> " + to_string(mainChar.HPStat) + "\n", 10, 300, 0);
@@ -122,6 +133,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                             typeText("You dont have any 'Health Potions'");
                         }
                         else {
+                            removeFromInventory(mainChar.inventory, "Health Potion");
                             int rem_health = (100 - mainChar.HPStat);
                             if (rem_health >= 25) {
                                 mainChar.HPStat += 25;
@@ -771,6 +783,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         typeText("You dont have any 'Big Health Potions'");
                     }
                     else {
+                        removeFromInventory(mainChar.inventory, "Big Health Potion");
                         int rem_health = (100 - mainChar.HPStat);
                         if (rem_health >= 50) {
                             mainChar.HPStat += 50;
@@ -786,6 +799,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         typeText("You dont have any 'Health Potions'");
                     }
                     else {
+                        removeFromInventory(mainChar.inventory, "Health Potion");
                         int rem_health = (100 - mainChar.HPStat);
                         if (rem_health >= 25) {
                             mainChar.HPStat += 25;
@@ -900,6 +914,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         typeText("You dont have any 'Big Health Potions'");
                     }
                     else {
+                        removeFromInventory(mainChar.inventory, "Big Health Potion");
                         int rem_health = (100 - mainChar.HPStat);
                         if (rem_health >= 50) {
                             mainChar.HPStat += 50;
@@ -915,6 +930,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         typeText("You dont have any 'Health Potions'");
                     }
                     else {
+                        removeFromInventory(mainChar.inventory, "Health Potion");
                         int rem_health = (100 - mainChar.HPStat);
                         if (rem_health >= 25) {
                             mainChar.HPStat += 25;
@@ -1029,6 +1045,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         typeText("You dont have any 'Big Health Potions'");
                     }
                     else {
+                        removeFromInventory(mainChar.inventory, "Big Health Potion");
                         int rem_health = (100 - mainChar.HPStat);
                         if (rem_health >= 50) {
                             mainChar.HPStat += 50;
@@ -1044,6 +1061,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         typeText("You dont have any 'Health Potions'");
                     }
                     else {
+                        removeFromInventory(mainChar.inventory, "Health Potion");
                         int rem_health = (100 - mainChar.HPStat);
                         if (rem_health >= 25) {
                             mainChar.HPStat += 25;
@@ -1162,6 +1180,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         typeText("You dont have any 'Big Health Potions'");
                     }
                     else {
+                        removeFromInventory(mainChar.inventory, "Big Health Potion");
                         int rem_health = (100 - mainChar.HPStat);
                         if (rem_health >= 50) {
                             mainChar.HPStat += 50;
@@ -1177,6 +1196,7 @@ void combatOccur(Player& mainChar, Enemy enemy) {
                         typeText("You dont have any 'Health Potions'");
                     }
                     else {
+                        removeFromInventory(mainChar.inventory, "Health Potion");
                         int rem_health = (100 - mainChar.HPStat);
                         if (rem_health >= 25) {
                             mainChar.HPStat += 25;

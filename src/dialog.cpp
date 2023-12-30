@@ -29,7 +29,7 @@ bool areFriendsDead = false;
 vector<string> lootedRooms;
 vector<string> defeatedBosses;
 // visited shit
-bool visitedWitch = true; //Q1
+bool visitedWitch = false; //Q1
 bool visitedDad = false; //Q2
 bool visitedSide1 = false; //Q3
 bool visitedSide2 = false; //Q4
@@ -49,7 +49,7 @@ sideChar shopKeep1 = { "Winslow's Wonders Market", 100, 100, 999999999};
 sideChar shopKeep2 = {"Ivy's Curios Corner", 100, 100,  999999999};
 // enemy
 // name, hpstat, level, weapon, gold, minDmg, maxDmg
-Enemy jew = { "Juut", 20 ,1 ,{}, 0, 1, 4};
+Enemy jew = { "Juut", 20 ,1 ,{}, 0, 3, 7};
 Enemy goblin = { "Goblin", 10, 1, {}, 0, 1, 4 };
 Enemy oldgoblin = { "Old Goblin", 50, 12, {}, 0, 10, 20 };
 Enemy ghost = { "Ghost", 50, 1, {}, 0, 5, 10 }; // Q2 enemy
@@ -80,9 +80,9 @@ Quest dadQuest = { "Welcome back dad!", "Escape the labyrinth with dad", "IN_PRO
 Quest collectingJewelry = { "Lost jewelry", "Retrieve John's jewelry", "IN_PROGRESS" }; //Q3
 Quest escapingCave = { "Last escape?", "Escape the dungeon with William", "IN_PROGRESS" }; //Q4
 Quest lastStretch = {"Last stretch", "null", "IN_PROGRESS"};
-Quest miniBoss_1 = { "Beat Salamander", "null", "IN_PROGRESS" };
-Quest miniBoss_2 = { "Beat Orphan Slaughterer", "null", "IN_PROGRESS" };
-Quest miniBoss_3 = { "Beat Young Jack", "null", "IN_PROGRESS" };
+Quest miniBoss_1 = { "Beat Salamander", "What the title says..", "IN_PROGRESS" };
+Quest miniBoss_2 = { "Beat Orphan Slaughterer", "What the title says..", "IN_PROGRESS" };
+Quest miniBoss_3 = { "Beat Young Jack", "What the title says..", "IN_PROGRESS" };
 Quest finalBoss = { "Beat Old Jack", "Beat Old Jack to escape the cave!!!!!!!!!!", "IN_PROGRESS" };
 
 // functions
@@ -124,6 +124,9 @@ void startGame(bool after_death) { // algus
     case 1:
         // skip the dialog.
         mainChar.inventory.push_back(Sword);
+        mainChar.inventory.push_back(hpPotion);
+        mainChar.inventory.push_back(hpPotion);
+        mainChar.inventory.push_back(hpPotion);
         typeText("tl;dr : Your friends decided to open a chest inside a cave.");
         caveChoice_2(true);
         break;
@@ -637,7 +640,12 @@ void deathOccur() {
     visitedDad = false; //Q2
     visitedSide1 = false; //Q3
     visitedSide2 = false; //Q4
+
+    hasBeenFarm = false;
+    hasLastStretchQuest = false;
+    areFriendsDead = false;
     // clear inventory, but give back sword.
+    mainChar.gold = 0;
     mainChar.inventory.clear();
     mainChar.inventory.push_back(Sword);
 
@@ -648,6 +656,7 @@ void deathOccur() {
     mainChar.HPStat = 100;
     lootedRooms.clear();
     mainChar.quests.clear();
+    defeatedBosses.clear();
 
     typeText("You died. Your progress has reset.", 40, 1000, 0);
     typeText("Respawning at the start of the labyrinth..", 15, 2000, 0);
@@ -783,7 +792,7 @@ void exploreLabyrinth() {
         if (cord == (string)"FB1") {
             bool defeatM1 = didDefeatBoss("FB1");
             if (!defeatM1) {
-                choiceDialog("Narrator", "Do you want to challenge " + mini1.name, { "I think im strong enough", "Sadly i have to decline :(" }, 10, 100, 100);
+                choiceDialog("Narrator", "Do you want to challenge " + boss.name, { "I think im strong enough", "Sadly i have to decline :(" }, 10, 100, 100);
                 int FB1;
                 cin >> FB1;
                 switch (FB1) {
@@ -1094,8 +1103,17 @@ void exploreLabyrinth() {
 				typeDialog(Witch.name, "Ahh! Don’t scare me like that. I’m just wandering around.");
 				typeDialog(mainChar.name, "Huh, Okei. Well I’m in some need of weapons can you help me with that?");
 				typeDialog(Witch.name, "Let me look at what I got.");
-                mainChar.inventory.push_back(magicalStaff);
-                lootedRooms.push_back("S4");
+                choiceDialog(Witch.name, "If you can guess the secret number", { "Enter number" });
+                int num1;
+                cin >> num1;
+                if (num1 == 332) {
+                    mainChar.inventory.push_back(magicalStaff);
+                    lootedRooms.push_back("S4");
+                }
+                else {
+					typeDialog(Witch.name, "Wrong no more tries.");
+					lootedRooms.push_back("S4");
+                }
             }
             else {
                 // do something else
@@ -1261,7 +1279,7 @@ void exploreLabyrinth() {
 			callCombat(jew);
             bool hasBeenHere = hasBeenInLootroom("LT2");
             if (!hasBeenHere) {
-                typeText("You have found 200 gold and left the room.", 45, 1000, 0);
+                typeText("You have found 350 gold and left the room.", 45, 1000, 0);
                 mainChar.gold += 350;
                 lootedRooms.push_back("LT2");
             }
@@ -1567,8 +1585,8 @@ void exploreLabyrinth() {
             printf("> ");
             cin >> choice_A18;
             switch (choice_A18) {
-            case 1: mainChar.cord = "A16"; break;
-            case 2: mainChar.cord = "Q5"; break;
+            case 1: mainChar.cord = "Q5"; break;
+            case 2: mainChar.cord = "A16"; break;
             case 3: openInventory(); break;
             case 4: checkStats(); break;
             default: break;

@@ -29,6 +29,7 @@ int main()
             // The about section
             clearWnd();
             printf("Made by Atlaz and Alabanik\n");
+			printf("3 am, 3 days, 2 guys\n");
             system("pause");
             clearWnd();
             main();
