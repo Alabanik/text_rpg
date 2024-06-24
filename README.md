@@ -41,7 +41,7 @@ A picture of the labyrinth (some changes were made during development).
 
 ## Purpose (why this project was made)
 
-We were simply bored and wanted to learn more about the C++ language (to maybe pursue it in life. - Atluzka)
+We were simply bored and wanted to learn more about the C++ language
 
 ## Known issues
 
